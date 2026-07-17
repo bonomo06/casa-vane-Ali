@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanessa & Ali - Lista de Presentes de Casamento</title>
+    <meta name="description" content="Ajude Vanessa e Ali a terminarem de pagar o lar dos sonhos (e mimar Dora e Ágata). Lista de presentes de casamento com presentes criativos para o casal e suas fuilhas.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2D5A3D;
+            --forest-light: #5A8A6A;
+            --forest-pale: #D8E8D4;
+            --rose: #C7365F;
+            --rose-light: #E8648A;
+            --rose-pale: #FDEDF2;
+            --amber: #D4890A;
+            --amber-light: #F0B84A;
+            --sand: #F7F3ED;
+            --ink: #1E1E1C;
+            --ink-soft: rgba(30, 30, 28, 0.7);
+            --white: #FFFFFF;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--sand);
+            color: var(--ink);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .mono {
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.02em;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        ::selection {
+            background: var(--rose);
+            color: var(--white);
+        }
+
+        /* ---------- NAV ---------- */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px clamp(20px, 6vw, 64px);
+            background: rgba(247, 243, 237, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1.5px solid rgba(30, 30, 28, 0.08);
+            max-height: 72px;
+        }
+
+        nav .brand {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--forest);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        nav .brand .amp {
+            color: var(--rose);
+            font-size: 1.4rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: none;
+            gap: clamp(12px, 3vw, 28px);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        @media(min-width:640px) {
+            nav ul {
+                display: flex;
+            }
+        }
+
+        nav ul li a {
+            opacity: 0.65;
+            transition: opacity .2s, color .2s;
+        }
+
+        nav ul li a:hover {
+            opacity: 1;
+            color: var(--rose);
+        }
+
+        /* ---------- HERO ---------- */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            align-items: center;
+            padding: clamp(40px, 8vw, 80px) clamp(20px, 6vw, 64px);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media(min-width:760px) {
+            .hero {
+                grid-template-columns: 1fr 1fr;
+                gap: 48px;
+            }
+        }
+
+        .hero-content {
+            animation: slideUp .7s ease both;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--forest);
+            background: var(--forest-pale);
+            border: 1.5px solid var(--forest-light);
+            padding: 5px 14px;
+            border-radius: 999px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5.5vw, 3.4rem);
+            line-height: 1.06;
+            font-weight: 800;
+            color: var(--forest);
+            margin-bottom: 16px;
+        }
+
+        .hero h1 .highlight {
+            color: var(--rose);
+            font-style: italic;
+            font-weight: 700;
+        }
+
+        .hero .sub {
+            max-width: 44ch;
+            font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+            color: var(--ink-soft);
+            margin-bottom: 28px;
+            line-height: 1.55;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            animation: slideUp .8s .15s ease both;
+        }
+
+        .hero-visual img {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 24px 64px rgba(45, 90, 61, 0.12);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 13px 24px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-primary {
+            background: var(--rose);
+            color: var(--white);
+            box-shadow: 0 4px 0 #9A2148;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #9A2148;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--forest);
+            border: 2px solid var(--forest);
+        }
+
+        .btn-ghost:hover {
+            background: var(--forest);
+            color: var(--white);
+        }
+
+        /* ---------- SECTIONS ---------- */
+        section {
+            padding: clamp(50px, 8vw, 90px) clamp(20px, 6vw, 64px);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-head {
+            text-align: center;
+            margin-bottom: clamp(32px, 6vw, 52px);
+        }
+
+        .section-head h2 {
+            font-size: clamp(1.7rem, 4vw, 2.4rem);
+            color: var(--forest);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .section-head p {
+            max-width: 50ch;
+            margin: 12px auto 0;
+            color: var(--ink-soft);
+            font-size: 0.95rem;
+        }
+
+        /* ---------- PROGRESS BAR ---------- */
+        .progress-section {
+            background: var(--forest);
+            border-radius: 24px;
+            padding: clamp(28px, 4vw, 44px);
+            color: var(--white);
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .progress-section h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .progress-section .goal-text {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            opacity: 0.75;
+            margin-bottom: 16px;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-bar-track {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            height: 14px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--rose-light), var(--amber-light));
+            width: 0%;
+            transition: width 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .progress-numbers {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            opacity: 0.8;
+        }
+
+        /* ---------- CATEGORY TABS ---------- */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: clamp(24px, 4vw, 40px);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 9px 20px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(30, 30, 28, 0.12);
+            background: var(--white);
+            cursor: pointer;
+            transition: all .2s ease;
+            color: var(--ink-soft);
+        }
+
+        .tab-btn:hover {
+            border-color: var(--forest);
+            color: var(--forest);
+        }
+
+        .tab-btn.active {
+            background: var(--forest);
+            color: var(--white);
+            border-color: var(--forest);
+        }
+
+        /* ---------- GIFT GRID ---------- */
+        .gifts-grid {
+            display: grid;
+            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .gift-card {
+            position: relative;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: 0 2px 12px rgba(30, 30, 28, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform .2s ease, box-shadow .2s ease;
+            border: 1.5px solid rgba(30, 30, 28, 0.04);
+        }
+
+        .gift-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(30, 30, 28, 0.1);
+        }
+
+        .gift-card .gift-emoji {
+            font-size: 2.4rem;
+            line-height: 1;
+        }
+
+        .gift-card .gift-tag {
+            display: inline-flex;
+            align-self: flex-start;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .gift-tag.casa {
+            background: var(--forest);
+        }
+
+        .gift-tag.dora {
+            background: var(--amber);
+        }
+
+        .gift-tag.agata {
+            background: #6B5CA5;
+        }
+
+        .gift-tag.casal {
+            background: var(--rose);
+        }
+
+        .gift-card .gift-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+        }
+
+        .gift-card .gift-desc {
+            font-size: 0.86rem;
+            color: var(--ink-soft);
+            line-height: 1.45;
+            flex-grow: 1;
+        }
+
+        .gift-card .gift-price {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--forest);
+        }
+
+        .gift-card .gift-price.free {
+            font-size: 1.1rem;
+            color: var(--rose);
+        }
+
+        .gift-divider {
+            border-top: 2px dashed rgba(30, 30, 28, 0.1);
+            margin: 4px 0;
+        }
+
+        .gift-card .present-btn {
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 11px;
+            border-radius: 12px;
+            border: 1.5px solid var(--forest);
+            background: transparent;
+            color: var(--forest);
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .gift-card .present-btn:hover {
+            background: var(--forest);
+            color: var(--white);
+        }
+
+        /* ---------- PETS SECTION ---------- */
+        .pets-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media(min-width:760px) {
+            .pets-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .pet-card {
+            border-radius: 24px;
+            padding: clamp(24px, 4vw, 36px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 14px;
+            transition: transform .2s ease;
+        }
+
+        .pet-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .pet-card.dora-card {
+            background: linear-gradient(145deg, #FFF8E7, #FFEACC);
+            border: 2px solid rgba(212, 137, 10, 0.15);
+        }
+
+        .pet-card.agata-card {
+            background: linear-gradient(145deg, #F0ECFF, #E4DFFF);
+            border: 2px solid rgba(107, 92, 165, 0.15);
+        }
+
+        .pet-card img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--white);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .pet-card h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .pet-card .pet-sub {
+            font-size: 0.88rem;
+            color: var(--ink-soft);
+            max-width: 32ch;
+        }
+
+        /* ---------- VALOR LIVRE ---------- */
+        .free-section {
+            background: linear-gradient(135deg, var(--rose-pale), #FFF5E6);
+            border-radius: 24px;
+            padding: clamp(30px, 5vw, 50px);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            border: 2px solid rgba(199, 54, 95, 0.08);
+        }
+
+        .free-section h3 {
+            font-size: clamp(1.4rem, 3vw, 1.8rem);
+            color: var(--forest);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .free-section p {
+            color: var(--ink-soft);
+            font-size: 0.94rem;
+            margin-bottom: 24px;
+            max-width: 45ch;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .free-amount {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .free-amount label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--forest);
+        }
+
+        .free-amount input {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            width: 160px;
+            padding: 12px 16px;
+            border: 2px solid var(--forest-light);
+            border-radius: 12px;
+            background: var(--white);
+            text-align: center;
+            color: var(--forest);
+        }
+
+        .free-amount input:focus {
+            outline: none;
+            border-color: var(--rose);
+            box-shadow: 0 0 0 3px rgba(199, 54, 95, 0.15);
+        }
+
+        /* ---------- MESSAGE ---------- */
+        .recado-box {
+            background: var(--white);
+            border-radius: 20px;
+            padding: clamp(28px, 5vw, 44px);
+            box-shadow: 0 2px 16px rgba(30, 30, 28, 0.06);
+            max-width: 620px;
+            margin: 0 auto;
+            border: 1.5px solid rgba(30, 30, 28, 0.04);
+        }
+
+        .recado-box textarea,
+        .recado-box input[type="text"] {
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            border: 1.5px solid rgba(30, 30, 28, 0.15);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+            resize: vertical;
+            background: var(--sand);
+            color: var(--ink);
+        }
+
+        .recado-box textarea:focus,
+        .recado-box input[type="text"]:focus {
+            outline: none;
+            border-color: var(--rose);
+            box-shadow: 0 0 0 3px rgba(199, 54, 95, 0.12);
+        }
+
+        .recado-box .btn-primary {
+            width: 100%;
+        }
+
+        /* ---------- FOOTER ---------- */
+        footer {
+            text-align: center;
+            padding: 40px 20px 60px;
+            font-size: 0.84rem;
+            color: var(--ink-soft);
+        }
+
+        footer .heart {
+            color: var(--rose);
+        }
+
+        footer .pets-footer {
+            font-size: 1.2rem;
+            margin-top: 6px;
+        }
+
+        /* ---------- MODAL ---------- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(30, 30, 28, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: 20px;
+            padding: clamp(24px, 4vw, 36px);
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+            transform: translateY(20px) scale(0.96);
+            transition: transform .3s cubic-bezier(0.22, 1, 0.36, 1);
+            text-align: center;
+        }
+
+        .modal-overlay.open .modal-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-box h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--forest);
+            margin-bottom: 6px;
+        }
+
+        .modal-box .modal-gift-name {
+            font-size: 0.88rem;
+            color: var(--ink-soft);
+            margin-bottom: 18px;
+        }
+
+        .modal-box .pix-key-box {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.82rem;
+            background: var(--sand);
+            border: 1.5px dashed var(--forest-light);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            word-break: break-all;
+            color: var(--forest);
+            font-weight: 700;
+        }
+
+        .modal-box .modal-valor {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--rose);
+            margin-bottom: 12px;
+        }
+
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .modal-box .btn-close {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(30, 30, 28, 0.12);
+            background: transparent;
+            color: var(--ink-soft);
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+
+        .modal-box .btn-close:hover {
+            background: var(--sand);
+        }
+
+        /* ---------- TOAST ---------- */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--ink);
+            color: var(--white);
+            padding: 13px 22px;
+            border-radius: 999px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+            z-index: 999;
+            white-space: nowrap;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ---------- CONFETTI ---------- */
+        .confetti-piece {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 14px;
+            pointer-events: none;
+            z-index: 998;
+            border-radius: 2px;
+        }
+
+        /* ---------- RESPONSIVE POLISH ---------- */
+        @media(max-width:759px) {
+            .hero {
+                text-align: center;
+            }
+
+            .hero-cta {
+                justify-content: center;
+            }
+
+            .hero-content {
+                order: 2;
+            }
+
+            .hero-visual {
+                order: 1;
+            }
+
+            .hero-visual img {
+                max-width: 280px;
+            }
+        }
+
+        /* ---------- SCROLL ANIMATIONS ---------- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="brand">Vanessa <span class="amp">&</span> Ali</div>
+        <ul>
+            <li><a href="#presentes">Presentes</a></li>
+            <li><a href="#pets">Dora & Ágata</a></li>
+            <li><a href="#recado">Deixar recado</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Casamento 2026</div>
+            <h1>Nos ajude a terminar de pagar nosso <span class="highlight">cantinho</span></h1>
+            <p class="sub">O valor arrecadado será usado no nosso apartamento (que ainda estamos pagando) e com as nossas fuilhas peludas. Qualquer presente já é um pedaço do nosso lar.</p>
+            <div class="hero-cta">
+                <a href="#presentes" class="btn btn-primary">Ver presentes</a>
+                <a href="#valor-livre" class="btn btn-ghost">Quero surpreender</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <img src="img/hero.png" alt="Vanessa e Ali com Dora e Ágata no sofá do novo apartamento">
+        </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <div style="padding: 0 clamp(20px, 6vw, 64px); margin-bottom: 20px;">
+        <div class="progress-section reveal" id="progressSection">
+            <h3>Meta de presentes</h3>
+            <p class="goal-text">Cada contribuição nos aproxima do apartamento dos sonhos (e das caminhas premium das fuilhas)</p>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-numbers">
+                <span id="progressCurrent">R$ 0</span>
+                <span>R$ 13.000</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- GIFTS -->
+    <section id="presentes">
+        <div class="section-head reveal">
+            <h2>Escolha um presente e faça parte da nossa história</h2>
+            <p>Cada item tem um significado especial pra gente. Você pode contribuir com o valor sugerido ou doar o quanto quiser.</p>
+        </div>
+
+        <div class="category-tabs reveal">
+            <button class="tab-btn active" data-category="todos" id="tab-todos">Todos</button>
+            <button class="tab-btn" data-category="casa" id="tab-casa">Apartamento</button>
+            <button class="tab-btn" data-category="dora" id="tab-dora">Dora</button>
+            <button class="tab-btn" data-category="agata" id="tab-agata">Ágata</button>
+            <button class="tab-btn" data-category="casal" id="tab-casal">Nós dois</button>
+        </div>
+
+        <div class="gifts-grid" id="giftsGrid">
+            <!-- Populated by JS -->
+        </div>
+    </section>
+
+    <!-- PETS -->
+    <section id="pets">
+        <div class="section-head reveal">
+            <h2>As verdadeiras donas da casa</h2>
+            <p>Elas não sabem o que é casamento, mas sabem que merecem presentes também.</p>
+        </div>
+
+        <div class="pets-section reveal">
+            <div class="pet-card dora-card">
+                <img src="img/dora.png" alt="Dora, a cachorrinha preta">
+                <h3>Dora</h3>
+                <p class="pet-sub">A cachorra mais inteligente do bairro. Sabe tudo, entende tudo e acha que o sofá é só dela.</p>
+            </div>
+            <div class="pet-card agata-card">
+                <img src="img/agata.png" alt="Ágata, a gatinha preta">
+                <h3>Ágata</h3>
+                <p class="pet-sub">Nossa gatinha resgatada que julga todo mundo com um olhar. Especialista em derrubar copos e ignorar brinquedos novos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- VALOR LIVRE -->
+    <section id="valor-livre">
+        <div class="free-section reveal">
+            <h3>Quer surpreender?</h3>
+            <p>Manda qualquer valor que faça sentido pro seu coração (e pro seu bolso). Qualquer quantia já é linda.</p>
+            <div class="free-amount">
+                <label for="freeValue">R$</label>
+                <input type="number" id="freeValue" placeholder="100" min="1">
+            </div>
+            <button class="btn btn-primary" id="freeGiftBtn" style="width: 100%;">Presentear com valor livre</button>
+        </div>
+    </section>
+
+    <!-- RECADO -->
+    <section id="recado">
+        <div class="section-head reveal">
+            <h2>Deixa um recado pra gente</h2>
+            <p>Pode ser um conselho, uma piada ou só um abraço em forma de texto.</p>
+        </div>
+        <div class="recado-box reveal">
+            <input type="text" id="nomeRecado" placeholder="Seu nome">
+            <textarea id="msgRecado" rows="4" placeholder="Escreva seu recado aqui..."></textarea>
+            <button class="btn btn-primary" id="enviarRecado">Enviar recado</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>Feito com <span class="heart">&#9829;</span> por Vanessa & Ali, 2026</p>
+        <p class="pets-footer">&#128054; &#128049;</p>
+    </footer>
+
+    <!-- TOAST -->
+    <div id="toast"></div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="giftModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">Presentear</h3>
+            <p class="modal-gift-name" id="modalGiftName"></p>
+            <div class="modal-valor" id="modalValor"></div>
+            <p style="font-size:0.84rem; color:var(--ink-soft); margin-bottom: 14px;">Copie a chave Pix abaixo e faça a transferência pelo seu banco:</p>
+            <div class="pix-key-box" id="pixKeyDisplay"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="copyPixBtn">Copiar chave Pix</button>
+                <button class="btn-close" id="closeModalBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIG ==========
+        const PIX_KEY = "vanessa.ali.casamento@pix.com.br";
+        // TODO: Replace with your actual Supabase URL and anon key
+        const SUPABASE_URL = "";
+        const SUPABASE_ANON_KEY = "";
+
+        // ========== GIFTS DATA ==========
+        const gifts = [
+            // APARTAMENTO
+            {
+                emoji: "🛋️",
+                tag: "casa",
+                title: "Cota do sofá que a Dora vai adotar",
+                desc: "A gente compra, mas quem vai usar de verdade é a Dora. Pelo menos o sofá vai ser bonito.",
+                price: 500
+            },
+            {
+                emoji: "🍳",
+                tag: "casa",
+                title: "Kit cozinha do chef que queima arroz",
+                desc: "Panelas, frigideiras e a esperança de que um dia a gente cozinhe sem acionar o alarme de incêndio.",
+                price: 350
+            },
+            {
+                emoji: "🧺",
+                tag: "casa",
+                title: "Máquina de lavar: herói do cotidiano",
+                desc: "Porque a gente se ama, mas ninguém ama lavar roupa na mão. Ninguém.",
+                price: 800
+            },
+            {
+                emoji: "🛏️",
+                tag: "casa",
+                title: "Jogo de cama de gente grande",
+                desc: "Lençol 400 fios pra gente se sentir na suíte presidencial. A Ágata vai deitar primeiro.",
+                price: 250
+            },
+            {
+                emoji: "🪴",
+                tag: "casa",
+                title: "Jardim de apartamento que não morre",
+                desc: "Vasos, plantas e a promessa de regar (dessa vez a gente jura que vai lembrar).",
+                price: 150
+            },
+            {
+                emoji: "🪞",
+                tag: "casa",
+                title: "Espelho pra selfie do casal",
+                desc: "Grande, bonito e estrategicamente posicionado pra Vanessa se arrumar e Ali fingir que não se olha.",
+                price: 200
+            },
+            {
+                emoji: "💡",
+                tag: "casa",
+                title: "Luminárias de ambiente",
+                desc: "Pra deixar o ap com aquela vibe de filme indie. Luz quente, clima bom, gatos ronronando.",
+                price: 180
+            },
+            {
+                emoji: "🧁",
+                tag: "casa",
+                title: "Mesa de doces",
+                desc: "Estou contando que Rafael Gardenal irá roubar todos os meus como vingança.",
+                price: 300
+            },
+            // DORA (CACHORRA)
+            {
+                emoji: "🐕",
+                tag: "dora",
+                title: "Caminha ortopédica da rainha Dora",
+                desc: "Ela já dormiu em tudo: sofá, tapete, cama do casal. Agora merece uma caminha só dela (spoiler: vai continuar no sofá).",
+                price: 180
+            },
+            {
+                emoji: "🧠",
+                tag: "dora",
+                title: "Brinquedos de inteligência",
+                desc: "Ela é esperta demais. Precisamos de quebra-cabeças caninos antes que ela aprenda a abrir a geladeira.",
+                price: 120
+            },
+            {
+                emoji: "🧥",
+                tag: "dora",
+                title: "Roupinhas pra todas as estações",
+                desc: "Porque Dora é fashion. Casaquinho pro frio, bandana pro calor, fantasia pro carnaval.",
+                price: 120
+            },
+            {
+                emoji: "🐾",
+                tag: "dora",
+                title: "Plano de saúde pet premium",
+                desc: "Consultas, vacinas e aquela ida ao vet porque ela comeu algo suspeito de novo.",
+                price: 400
+            },
+            {
+                emoji: "🎾",
+                tag: "dora",
+                title: "Kit passeio da aventureira",
+                desc: "Guia retrátil, peitoral anti-puxão e saquinhos biodegradáveis. Dora vai explorar o bairro com estilo.",
+                price: 100
+            },
+            {
+                emoji: "🧼",
+                tag: "dora",
+                title: "Day spa canino",
+                desc: "Banho, tosa, hidratação e perfume. Dora vai voltar tão cheirosa que você não vai acreditar que é a mesma cachorra.",
+                price: 90
+            },
+            // AGATA (GATA)
+            {
+                emoji: "🐱",
+                tag: "agata",
+                title: "Arranhador torre de 5 andares",
+                desc: "Porque a Ágata acha que é rainha e precisa de um castelo. Vai ignorar por 3 dias e depois não sai mais de lá.",
+                price: 250
+            },
+            {
+                emoji: "🫧",
+                tag: "agata",
+                title: "Fonte de água automática",
+                desc: "A gata só bebe água corrente. Do pote normal? Jamais. Ela tem padrões.",
+                price: 120
+            },
+            {
+                emoji: "🧸",
+                tag: "agata",
+                title: "Kit brinquedos interativos",
+                desc: "Varinhas com penas, bolinhas com guizo e um laser que vai fazer ela correr feito louca às 3 da manhã.",
+                price: 70
+            },
+            {
+                emoji: "🏠",
+                tag: "agata",
+                title: "Casinha/toca quentinha",
+                desc: "Uma toca fechada onde ela pode se esconder do mundo (e da Dora). Introvertida raiz.",
+                price: 150
+            },
+            {
+                emoji: "🍽️",
+                tag: "agata",
+                title: "Comedouro elevado de cerâmica",
+                desc: "Porque comer no chão? A Ágata é refinada. Comedouro elevado pra não forçar o pescocinho.",
+                price: 90
+            },
+            {
+                emoji: "✨",
+                tag: "agata",
+                title: "Sachêzinhos gourmet por 3 meses",
+                desc: "Patezinho de salmão, franguinho desfiado... a Ágata come melhor que a gente.",
+                price: 200
+            },
+            // CASAL
+            {
+                emoji: "🍷",
+                tag: "casal",
+                title: "Noite de vinho e besteira no sofá",
+                desc: "Um vinho bom, pipoca gourmet e o controle remoto. A noite perfeita do casal recém-casado.",
+                price: 100
+            },
+            {
+                emoji: "📸",
+                tag: "casal",
+                title: "Ensaio fotográfico pós-casamento",
+                desc: "Pra ter fotos bonitas sem o estresse do dia. Só o casal, o fotógrafo e a Dora photobombing.",
+                price: 600
+            },
+            {
+                emoji: "🧖",
+                tag: "casal",
+                title: "Day spa pro casal cansado",
+                desc: "Massagem, ofurô e uma tarde inteira sem pensar em boleto do apartamento. A gente merece.",
+                price: 350
+            },
+            {
+                emoji: "🍽️",
+                tag: "casal",
+                title: "Jantar romântico (sem as fuilhas)",
+                desc: "Um restaurante bacana onde ninguém late embaixo da mesa nem pula no colo no meio da sobremesa.",
+                price: 250
+            },
+        ];
+
+        // ========== TOAST ==========
+        const toast = document.getElementById('toast');
+        let toastTimer;
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ========== CONFETTI ==========
+        function confettiBurst(x, y) {
+            const colors = ['#2D5A3D', '#C7365F', '#D4890A', '#5A8A6A', '#E8648A', '#6B5CA5'];
+            for (let i = 0; i < 28; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-piece';
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 60 + Math.random() * 140;
+                const dx = Math.cos(angle) * dist;
+                const dy = Math.sin(angle) * dist - 50;
+                const rot = Math.random() * 720 - 360;
+                document.body.appendChild(p);
+                p.animate([
+                    { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+                    { transform: `translate(${dx}px, ${dy + 240}px) rotate(${rot}deg)`, opacity: 0 }
+                ], { duration: 900 + Math.random() * 500, easing: 'cubic-bezier(.2,.7,.3,1)' });
+                setTimeout(() => p.remove(), 1500);
+            }
+        }
+
+        // ========== RENDER GIFTS ==========
+        const giftsGrid = document.getElementById('giftsGrid');
+
+        function renderGifts(category = 'todos') {
+            const filtered = category === 'todos' ? gifts : gifts.filter(g => g.tag === category);
+            giftsGrid.innerHTML = filtered.map((g, i) => `
+                <div class="gift-card" style="animation: slideUp .5s ${i * 0.04}s ease both;">
+                    <div class="gift-emoji">${g.emoji}</div>
+                    <span class="gift-tag ${g.tag}">${tagLabel(g.tag)}</span>
+                    <div class="gift-title">${g.title}</div>
+                    <p class="gift-desc">${g.desc}</p>
+                    <div class="gift-price">R$ ${g.price}</div>
+                    <div class="gift-divider"></div>
+                    <button class="present-btn" data-index="${gifts.indexOf(g)}">Quero presentear</button>
+                </div>
+            `).join('');
+
+            giftsGrid.querySelectorAll('.present-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const gift = gifts[parseInt(btn.dataset.index)];
+                    openGiftModal(gift);
+                    const rect = btn.getBoundingClientRect();
+                    confettiBurst(rect.left + rect.width / 2, rect.top);
+                });
+            });
+        }
+
+        function tagLabel(tag) {
+            const labels = { casa: 'Apartamento', dora: 'Dora', agata: 'Ágata', casal: 'Casal' };
+            return labels[tag] || tag;
+        }
+
+        renderGifts();
+
+        // ========== TABS ==========
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderGifts(btn.dataset.category);
+            });
+        });
+
+        // ========== MODAL ==========
+        const modal = document.getElementById('giftModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalGiftName = document.getElementById('modalGiftName');
+        const modalValor = document.getElementById('modalValor');
+        const pixKeyDisplay = document.getElementById('pixKeyDisplay');
+
+        function openGiftModal(gift) {
+            modalTitle.textContent = gift.emoji + ' Presentear';
+            modalGiftName.textContent = gift.title;
+            modalValor.textContent = `R$ ${gift.price}`;
+            pixKeyDisplay.textContent = PIX_KEY;
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        document.getElementById('copyPixBtn').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(PIX_KEY);
+            } catch (err) { /* fallback */ }
+            showToast('Chave Pix copiada! Obrigado pelo carinho');
+        });
+
+        // ========== FREE GIFT ==========
+        document.getElementById('freeGiftBtn').addEventListener('click', () => {
+            const val = document.getElementById('freeValue').value;
+            if (!val || val <= 0) {
+                showToast('Coloca um valor, pode ser qualquer um!');
+                return;
+            }
+            modalTitle.textContent = '🎁 Presente livre';
+            modalGiftName.textContent = 'Valor escolhido por você';
+            modalValor.textContent = `R$ ${parseFloat(val).toFixed(2)}`;
+            pixKeyDisplay.textContent = PIX_KEY;
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            const btn = document.getElementById('freeGiftBtn');
+            const rect = btn.getBoundingClientRect();
+            confettiBurst(rect.left + rect.width / 2, rect.top);
+        });
+
+        // ========== MESSAGE ==========
+        document.getElementById('enviarRecado').addEventListener('click', async () => {
+            const nome = document.getElementById('nomeRecado').value.trim();
+            const msg = document.getElementById('msgRecado').value.trim();
+            if (!msg) {
+                showToast('Escreve algo pra gente! Até um oi vale.');
+                return;
+            }
+
+            // TODO: Send to Supabase
+            // if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            //     await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             'apikey': SUPABASE_ANON_KEY,
+            //             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            //         },
+            //         body: JSON.stringify({ nome, mensagem: msg })
+            //     });
+            // }
+
+            showToast(`Valeu${nome ? ', ' + nome : ''}! Recado guardado com carinho`);
+            document.getElementById('nomeRecado').value = '';
+            document.getElementById('msgRecado').value = '';
+        });
+
+        // ========== PROGRESS BAR ANIMATION ==========
+        // TODO: Fetch real progress from Supabase
+        const MOCK_CURRENT = 2450; // Replace with real data
+        const GOAL = 13000;
+
+        function animateProgress() {
+            const pct = Math.min((MOCK_CURRENT / GOAL) * 100, 100);
+            const fill = document.getElementById('progressFill');
+            const current = document.getElementById('progressCurrent');
+
+            setTimeout(() => {
+                fill.style.width = pct + '%';
+            }, 400);
+
+            // Animate number
+            let counter = 0;
+            const step = MOCK_CURRENT / 40;
+            const interval = setInterval(() => {
+                counter += step;
+                if (counter >= MOCK_CURRENT) {
+                    counter = MOCK_CURRENT;
+                    clearInterval(interval);
+                }
+                current.textContent = `R$ ${Math.floor(counter).toLocaleString('pt-BR')}`;
+            }, 40);
+        }
+
+        // ========== SCROLL REVEAL ==========
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ========== PROGRESS TRIGGER ==========
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateProgress();
+                    progressObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        progressObserver.observe(document.getElementById('progressSection'));
+
+        // ========== KEYBOARD: ESC closes modal ==========
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
+</body>
+
+</html>
