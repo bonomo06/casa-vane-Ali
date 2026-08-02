@@ -120,32 +120,8 @@ nav ul li a:hover {
     align-items: center;
     justify-content: center;
     padding: 100px clamp(20px, 5vw, 64px) 60px;
-    background: linear-gradient(135deg, #FBF8F3 0%, #F5EFE6 50%, #EFE7DC 100%);
+    background: var(--sand);
     overflow: hidden;
-}
-
-.std-editorial-hero::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(199, 54, 95, 0.08) 0%, transparent 70%);
-    pointer-events: none;
-    border-radius: 50%;
-}
-
-.std-editorial-hero::after {
-    content: '';
-    position: absolute;
-    bottom: -100px;
-    left: -100px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(45, 90, 61, 0.08) 0%, transparent 70%);
-    pointer-events: none;
-    border-radius: 50%;
 }
 
 .std-container {
@@ -522,10 +498,22 @@ nav ul li a:hover {
 }
 
 .address-info-box h3 {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     color: var(--forest);
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    line-height: 1.15;
+}
+
+.venue-subtitle {
+    font-size: 1.02rem;
+    font-weight: 500;
+    color: var(--forest);
+    opacity: 0.88;
+    margin-top: 1px;
 }
 
 .address-text {

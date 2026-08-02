@@ -174,7 +174,7 @@ function renderGifts(category = 'todos') {
 }
 
 function tagLabel(tag) {
-    const labels = { casa: 'Apartamento', pets: 'Dora & Ágata', dora: 'Dora & Ágata', agata: 'Dora & Ágata', casal: 'Casal' };
+    const labels = { casa: 'Apartamento', pets: 'Dora & Ágata', dora: 'Dora & Ágata', agata: 'Dora & Ágata', casal: 'Casório' };
     return labels[tag] || tag;
 }
 

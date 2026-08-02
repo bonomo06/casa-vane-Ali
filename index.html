@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vanessa & Ali - Lista de Presentes de Casamento</title>
     <meta name="description" content="Ajude Vanessa e Ali a terminarem de pagar o lar dos sonhos (e mimar Dora e Ágata). Lista de presentes de casamento com presentes criativos para o casal e suas fuilhas.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="img/hero.png">
+    <link rel="apple-touch-icon" href="img/hero.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400;500;600&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -22,8 +22,8 @@
             <li><a href="#inicio">Início</a></li>
             <li><a href="#presentes">Presentes</a></li>
             <li><a href="#pets">Dora & Ágata</a></li>
-            <li><a href="#recado">Deixar recado</a></li>
-            <li><a href="#rsvp">Confirmar presença</a></li>
+            <li><a href="#recado">Deixe um recado</a></li>
+            <li><a href="#rsvp">Confirme sua presença</a></li>
             <li><a href="#endereco">Endereço</a></li>
         </ul>
     </nav>
@@ -42,7 +42,7 @@
                     <span class="cal-icon">🗓️</span> 10 de Abril de 2027
                 </p>
                 <p class="std-time-tag">
-                    <span class="clock-icon">🕒</span> 18:30 às 01:00h
+                    <span class="clock-icon">🕒</span> 18:30 à 01:00h
                 </p>
 
                 <div class="std-divider-line"></div>
@@ -71,11 +71,11 @@
                 </div>
 
                 <div class="std-actions">
-                    <a href="#presentes-intro" class="btn btn-primary">
+                    <a href="#presentes" class="btn btn-primary">
                         🎁 Ver Lista de Presentes
                     </a>
                     <a href="#rsvp" class="btn btn-ghost">
-                        💌 Confirmar Presença
+                        💌 Confirme sua Presença
                     </a>
                 </div>
             </div>
@@ -86,11 +86,6 @@
                     <div class="frame-ambient-glow"></div>
 
                     <div class="photo-frame-card">
-                        <!-- Badge do contador de fotos -->
-                        <div class="photo-counter-badge">
-                            <span id="currentSlideNum">01</span> / <span id="totalSlidesNum">09</span>
-                        </div>
-
                         <div class="photo-slider-track" id="heroCarousel">
                             <div class="photo-slide active"><img src="img/vane-ali1.png" alt="Vanessa & Ali"></div>
                             <div class="photo-slide"><img src="img/vane-ali2.png" alt="Vanessa & Ali"></div>
@@ -116,23 +111,6 @@
         </div>
     </section>
 
-    <!-- INTRO DOS PRESENTES / NOSSO CANTINHO -->
-    <section id="presentes-intro" class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">Casamento 2027</div>
-            <h1>Nos ajude a terminar de pagar nosso <span class="highlight">cantinho</span></h1>
-            <p class="sub">O valor arrecadado será usado no nosso apartamento (que ainda estamos pagando) e com as nossas fuilhas peludas. Qualquer presente já é um pedaço do nosso lar.</p>
-            <div class="hero-cta">
-                <a href="#presentes" class="btn btn-primary">Ver lista de presentes</a>
-                <a href="#valor-livre" class="btn btn-ghost">Quero surpreender</a>
-            </div>
-        </div>
-        <div class="hero-visual">
-            <img src="img/hero.png" alt="Vanessa e Ali com Dora e Ágata no sofá do novo apartamento">
-        </div>
-    </section>
-
-
     <!-- GIFTS -->
     <section id="presentes">
         <div class="section-head reveal">
@@ -144,11 +122,24 @@
             <button class="tab-btn active" data-category="todos" id="tab-todos">Todos</button>
             <button class="tab-btn" data-category="casa" id="tab-casa">Apartamento</button>
             <button class="tab-btn" data-category="pets" id="tab-pets">Dora & Ágata</button>
-            <button class="tab-btn" data-category="casal" id="tab-casal">Nós dois</button>
+            <button class="tab-btn" data-category="casal" id="tab-casal">Casório</button>
         </div>
 
         <div class="gifts-grid" id="giftsGrid">
             <!-- Populated by JS -->
+        </div>
+    </section>
+
+    <!-- VALOR LIVRE -->
+    <section id="valor-livre">
+        <div class="free-section reveal">
+            <h3>Quer surpreender?</h3>
+            <p>Mande qualquer valor que faça sentido pro seu coração (e pro seu bolso). Qualquer quantia já é linda.</p>
+            <div class="free-amount">
+                <label for="freeValue">R$</label>
+                <input type="number" id="freeValue" placeholder="100" min="1">
+            </div>
+            <button class="btn btn-primary" id="freeGiftBtn" style="width: 100%;">Presentear com valor livre</button>
         </div>
     </section>
 
@@ -173,23 +164,10 @@
         </div>
     </section>
 
-    <!-- VALOR LIVRE -->
-    <section id="valor-livre">
-        <div class="free-section reveal">
-            <h3>Quer surpreender?</h3>
-            <p>Manda qualquer valor que faça sentido pro seu coração (e pro seu bolso). Qualquer quantia já é linda.</p>
-            <div class="free-amount">
-                <label for="freeValue">R$</label>
-                <input type="number" id="freeValue" placeholder="100" min="1">
-            </div>
-            <button class="btn btn-primary" id="freeGiftBtn" style="width: 100%;">Presentear com valor livre</button>
-        </div>
-    </section>
-
     <!-- RECADO -->
     <section id="recado">
         <div class="section-head reveal">
-            <h2>Deixa um recado pra gente</h2>
+            <h2>Deixe um recado pra gente</h2>
             <p>Pode ser um conselho, uma piada ou só um abraço em forma de texto.</p>
         </div>
         <div class="recado-box reveal">
@@ -202,11 +180,11 @@
     <!-- SEÇÃO CONFIRMAR PRESENÇA -->
     <section id="rsvp">
         <div class="section-head reveal">
-            <h2>Confirmar Presença</h2>
+            <h2>Confirme sua Presença</h2>
         </div>
         <div class="reveal" style="text-align: center; max-width: 500px; margin: 0 auto;">
             <button class="btn btn-primary" id="openRsvpModalBtn" style="padding: 16px 32px; font-size: 1.05rem; width: 100%;">
-                🔍 Buscar meu nome e confirmar presença
+                🔍 Buscar meu nome e confirme sua presença
             </button>
         </div>
     </section>
@@ -224,14 +202,14 @@
                     <img src="img/local.png" alt="Fachada do local do casamento em Arujá">
                 </div>
                 <div class="address-info-box">
-                    <span class="address-badge">📍 Onde vai ser</span>
-                    <h3>Arujá — SP</h3>
+                    <span class="address-badge">📍 Onde será</span>
+                    <h3>Monte Millazzo <span class="venue-subtitle">Arujá, SP</span></h3>
                     <p class="address-text">
                         <strong>Endereço:</strong><br>
                         Rua Paulo Antônio - R. Paulo A Barbosa, 290<br>
                         Jardim Arujá, Arujá - SP<br>
                         CEP: 07407-375<br><br>
-                        <strong>Horário:</strong> 18:30 às 01:00h
+                        <strong>Horário:</strong> 18:30 à 01:00h
                     </p>
                     <a href="https://maps.google.com/?q=Rua+Paulo+Ant%C3%B4nio+-+R.+Paulo+A+Barbosa,+290+-+Jardim+Aruj%C3%A1,+Aruj%C3%A1+-+SP,+07407-375" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px;">
                         🗺️ Abrir no Google Maps
@@ -296,7 +274,7 @@
     <!-- MODAL UNIFICADO: BUSCAR NOME E CONFIRMAR PRESENÇA -->
     <div class="modal-overlay" id="rsvpModal">
         <div class="modal-box rsvp-modal-box">
-            <h3>Confirmar Presença</h3>
+            <h3>Confirme sua Presença</h3>
 
             <!-- PASSO 1: BUSCAR NOME -->
             <div id="rsvpSearchStep">
@@ -329,7 +307,7 @@
                     </div>
                 </div>
                 <div class="modal-actions" style="margin-top: 18px; display:flex; flex-direction:column; gap:8px;">
-                    <button class="btn btn-primary" id="confirmRsvpBtn" style="width: 100%;">Confirmar Presença</button>
+                    <button class="btn btn-primary" id="confirmRsvpBtn" style="width: 100%;">Confirme sua Presença</button>
                     <button class="btn-close" id="backToSearchBtn" style="width: 100%;">Trocar nome / Voltar</button>
                 </div>
             </div>
