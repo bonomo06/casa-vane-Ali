@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Verificação no navegador — Vanessa &amp; Ali</title></head>
+<body>
+<h1 style="font-family:sans-serif;font-size:1.1rem">Verificação de ponta a ponta</h1>
+<p style="font-family:sans-serif;font-size:0.85rem;color:#555;max-width:60ch">
+Abra este arquivo por um servidor HTTP na raiz do projeto
+(<code>python -m http.server 8765</code> e depois
+<code>http://localhost:8765/tests/verificacao-navegador.html</code>).
+Ele carrega o site num iframe e exercita o fluxo real. Não escreve nada no banco.</p>
+<pre id="out" style="font-family:monospace;font-size:0.8rem">rodando...</pre>
+<iframe id="f" src="/index.html" style="width:1200px;height:900px;border:1px solid #ccc"></iframe>
+<script>
+const linhas = [];
+function ok(cond, msg) { linhas.push((cond ? 'PASS  ' : 'FALHA ') + msg); }
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+
+document.getElementById('f').addEventListener('load', async () => {
+    const w = document.getElementById('f').contentWindow;
+    const d = w.document;
+    await esperar(3500);
+
+    const vis = el => el && w.getComputedStyle(el).display !== 'none';
+
+    // --- estrutura ---
+    ok(d.querySelectorAll('.gift-card').length === 15, '15 cartões de presente renderizados');
+    ok(!!d.querySelector('#sobre'), 'seção "Sobre nós" existe');
+    ok(!!d.querySelector('nav a[href="#sobre"]'), 'link "Sobre nós" no menu');
+    ok(d.querySelector('#sobre .sobre-remate').textContent.includes('conta na cerimônia'),
+       'remate do "Sobre nós" presente');
+    ok(d.querySelector('.dora-card .pet-sub').textContent.includes('com licença'),
+       'texto novo da Dora');
+    ok(d.querySelector('.agata-card .pet-sub').textContent.includes('brabrinha'),
+       'texto novo da Ágata');
+    ok(!d.body.innerHTML.includes('vanessa.ali.casamento@pix'), 'chave Pix falsa removida');
+
+    // --- paleta e foto ---
+    const forest = w.getComputedStyle(d.documentElement).getPropertyValue('--forest').trim();
+    ok(forest.toLowerCase() === '#3e5732', 'verde oliva aplicado (--forest = ' + forest + ')');
+    const img7 = d.querySelector('.photo-slide img[src*="vane-ali7"]');
+    const pos7 = img7 ? w.getComputedStyle(img7).objectPosition : '';
+    ok(pos7.startsWith('78%'), 'foto 7 reenquadrada (object-position = ' + pos7 + ')');
+    const img1 = d.querySelector('.photo-slide img[src*="vane-ali1"]');
+    ok(w.getComputedStyle(img1).objectPosition.startsWith('50%'), 'demais fotos intactas');
+
+    // --- fluxo de pagamento (dados do fallback, sem id de banco) ---
+    const btn = d.querySelector('.present-btn:not([disabled])');
+    btn.click();
+    await esperar(300);
+    const modalAberto = () => d.querySelector('#giftModal').classList.contains('open');
+    ok(modalAberto(), 'modal ABRE ao clicar em "Quero presentear"');
+    ok(modalAberto() && vis(d.querySelector('#pagoStep1')), 'passo 1 visível ao abrir o modal');
+    ok(!vis(d.querySelector('#pagoStep2')), 'passo 2 OCULTO antes de clicar no link');
+    ok(!vis(d.querySelector('#pagoStep3')), 'passo 3 oculto antes de clicar no link');
+
+    const link = d.querySelector('#irPagamentoBtn');
+    ok(/^https:\/\/mpago\.la\//.test(link.href), 'link aponta para o Mercado Pago (' + link.href + ')');
+    ok(link.target === '_blank', 'link abre em nova aba');
+    link.addEventListener('click', e => e.preventDefault());
+
+    d.querySelector('#closeModalBtn').click();
+    await esperar(200);
+
+    // --- fluxo de pagamento (presente COM id de banco) ---
+    // O banco ainda está vazio, então a lista veio do fallback e nenhum item tem
+    // id. Injetamos um presente com id para exercitar os 3 passos de verdade.
+    w.abrirModalPagamento({
+        id: '00000000-0000-0000-0000-000000000000',
+        emoji: '🛋️', nome: 'Presente de teste', preco: 600,
+        link_pagamento: 'https://mpago.la/1rTw746'
+    });
+    await esperar(200);
+    ok(modalAberto() && vis(d.querySelector('#pagoStep1')), 'com id: passo 1 visível');
+    ok(!vis(d.querySelector('#pagoStep2')), 'com id: passo 2 OCULTO antes do clique no link');
+
+    d.querySelector('#irPagamentoBtn').click();
+    await esperar(900);
+    ok(modalAberto() && vis(d.querySelector('#pagoStep2')), 'com id: passo 2 aparece DEPOIS do clique');
+    ok(!vis(d.querySelector('#pagoStep3')), 'com id: passo 3 ainda oculto no passo 2');
+
+    d.querySelector('#jaPagueiBtn').click();
+    await esperar(200);
+    ok(modalAberto() && vis(d.querySelector('#pagoStep3')), 'com id: passo 3 após "já fiz o pagamento"');
+    ok(d.querySelector('#avisoTextoPresente').textContent.includes('Não dá para desfazer'),
+       'aviso de irreversibilidade cita a consequência');
+    ok(d.querySelector('#avisoTextoPresente').textContent.includes('Presente de teste'),
+       'aviso cita o presente pelo nome');
+
+    d.querySelector('#voltarPasso2Btn').click();
+    await esperar(200);
+    ok(modalAberto() && vis(d.querySelector('#pagoStep2')) && !vis(d.querySelector('#pagoStep3')),
+       '"Voltar" retorna ao passo 2');
+
+    d.querySelector('#pagarDepoisBtn').click();
+    await esperar(300);
+    ok(!modalAberto(), '"vou fazer depois" fecha o modal');
+
+    // --- valor livre ---
+    const campo = d.querySelector('#freeValue');
+    campo.value = '320';
+    campo.dispatchEvent(new w.Event('input'));
+    await esperar(150);
+    ok(d.querySelector('#avisoValorLivre').textContent.includes('300'),
+       'valor livre 320 sugere R$ 300 ("' + d.querySelector('#avisoValorLivre').textContent + '")');
+    campo.value = '175';
+    campo.dispatchEvent(new w.Event('input'));
+    await esperar(150);
+    ok(d.querySelector('#avisoValorLivre').textContent.includes('150'), 'empate 175 resolve para R$ 150');
+    campo.value = '300';
+    campo.dispatchEvent(new w.Event('input'));
+    await esperar(150);
+    ok(d.querySelector('#avisoValorLivre').textContent === '', 'valor exato não mostra aviso');
+
+    // --- helpers e banco ---
+    ok(w.WeddingDB.disponivel(), 'cliente Supabase inicializado');
+    const convidados = await w.WeddingDB.listarConvidados();
+    ok(Array.isArray(convidados), 'listarConvidados respondeu (' +
+       (convidados ? convidados.length + ' convidados' : 'erro') + ')');
+
+    document.getElementById('out').textContent =
+        linhas.join('\n') + '\n\nRESULTADO: ' +
+        linhas.filter(l => l.startsWith('PASS')).length + ' passaram, ' +
+        linhas.filter(l => l.startsWith('FALHA')).length + ' falharam';
+});
+</script>
+</body>
+</html>

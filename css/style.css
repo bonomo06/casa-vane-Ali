@@ -1,7 +1,7 @@
 :root {
-    --forest: #2D5A3D;
-    --forest-light: #5A8A6A;
-    --forest-pale: #D8E8D4;
+    --forest: #3E5732;
+    --forest-light: #6E8759;
+    --forest-pale: #DDE6D2;
     --rose: #C7365F;
     --rose-light: #E8648A;
     --rose-pale: #FDEDF2;
@@ -1398,4 +1398,96 @@ footer .pets-footer {
 .reveal.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* ---------- SOBRE NÓS ---------- */
+.sobre-nos {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.sobre-nos p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.18rem;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+}
+
+.sobre-nos .sobre-remate {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.7rem;
+    color: var(--forest);
+    margin-top: 26px;
+}
+
+@media (max-width: 640px) {
+    .sobre-nos p {
+        font-size: 1.05rem;
+    }
+
+    .sobre-nos .sobre-remate {
+        font-size: 1.4rem;
+    }
+}
+
+/* ---------- PRESENTE JÁ DADO ---------- */
+.gift-card.presenteado {
+    opacity: 0.55;
+    filter: grayscale(0.85);
+    position: relative;
+}
+
+.gift-card.presenteado .present-btn {
+    background: transparent;
+    border: 1.5px solid var(--ink-soft);
+    color: var(--ink-soft);
+    cursor: not-allowed;
+}
+
+.gift-badge-dado {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--forest);
+    color: var(--white);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+}
+
+/* ---------- AVISO IRREVERSÍVEL (passo 3 do pagamento) ---------- */
+.aviso-irreversivel {
+    background: var(--rose-pale);
+    border: 1.5px solid var(--rose-light);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.aviso-irreversivel strong {
+    display: block;
+    color: var(--rose);
+    font-size: 0.92rem;
+    margin-bottom: 8px;
+}
+
+.aviso-irreversivel p {
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ---------- ENQUADRAMENTO DA FOTO 7 ---------- */
+/* O casal está à direita do centro nesta foto. Como a moldura é retrato e usa
+   object-fit: cover, o object-position: center padrão corta para o lado errado
+   e encosta os dois na borda direita. O valor 78% foi aferido comparando
+   capturas headless de 66%, 72%, 78% e 85%. */
+.photo-slide img[src*="vane-ali7"] {
+    object-position: 78% center;
 }

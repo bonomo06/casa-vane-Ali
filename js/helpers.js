@@ -1,0 +1,84 @@
+// Funções puras: sem DOM, sem rede, sem estado.
+// O wrapper abaixo faz o arquivo servir para os dois mundos — <script> no browser
+// (expõe window.WeddingHelpers) e require() no Node (para os testes) — sem exigir
+// bundler nem ES modules, que quebrariam o site aberto por file://.
+(function (raiz, fabrica) {
+    if (typeof module === 'object' && module.exports) module.exports = fabrica();
+    else raiz.WeddingHelpers = fabrica();
+})(typeof self !== 'undefined' ? self : this, function () {
+
+    // Links do Mercado Pago, por valor. Mantido em sincronia manual com
+    // scripts/gerar_seed.py — os presentes vêm do banco, mas o valor livre
+    // precisa dos links no browser.
+    var LINKS_POR_VALOR = {
+        150: 'https://mpago.la/2rYBAzG',
+        200: 'https://mpago.la/1DxCxep',
+        250: 'https://mpago.la/2pjkV7C',
+        300: 'https://mpago.la/1iESGbX',
+        350: 'https://mpago.la/2oD5cr5',
+        400: 'https://mpago.la/2Bb3UCc',
+        450: 'https://mpago.la/2VB4y4z',
+        500: 'https://mpago.la/1QnLMJq',
+        550: 'https://mpago.la/2t9WLoL',
+        600: 'https://mpago.la/1rTw746',
+        700: 'https://mpago.la/21zartN',
+        800: 'https://mpago.la/1rn5fXk',
+        1000: 'https://mpago.la/21DHeUS',
+        1200: 'https://mpago.la/2qwk9Ht',
+        1500: 'https://mpago.la/1r2Wf66'
+    };
+
+    var VALORES_COM_LINK = Object.keys(LINKS_POR_VALOR)
+        .map(Number)
+        .sort(function (a, b) { return a - b; });
+
+    // Empate resolve para o menor valor: entre pedir R$150 e R$200 de quem digitou
+    // R$175, pedir menos é mais gentil.
+    function valorMaisProximo(valor) {
+        var n = Number(valor);
+        if (!isFinite(n) || n <= 0) return null;
+        return VALORES_COM_LINK.reduce(function (melhor, atual) {
+            return Math.abs(atual - n) < Math.abs(melhor - n) ? atual : melhor;
+        }, VALORES_COM_LINK[0]);
+    }
+
+    function linkParaValor(valor) {
+        return LINKS_POR_VALOR[Number(valor)] || null;
+    }
+
+    // NFD separa a letra do acento; U+0300-U+036F são os acentos soltos.
+    // Os escapes \u são obrigatórios: escrever os acentos combinantes
+    // literalmente aqui depende do encoding do arquivo e quebra em silêncio.
+    function normalizar(texto) {
+        if (texto === null || texto === undefined) return '';
+        return String(texto)
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    // Busca por trecho em qualquer posição: quem digita só o sobrenome se acha.
+    function buscarConvidados(lista, termo) {
+        var alvo = normalizar(termo);
+        if (!alvo) return [];
+        return (lista || []).filter(function (c) {
+            return normalizar(c && c.nome).indexOf(alvo) !== -1;
+        });
+    }
+
+    function formatarBRL(valor) {
+        return 'R$ ' + Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+    }
+
+    return {
+        LINKS_POR_VALOR: LINKS_POR_VALOR,
+        VALORES_COM_LINK: VALORES_COM_LINK,
+        valorMaisProximo: valorMaisProximo,
+        linkParaValor: linkParaValor,
+        normalizar: normalizar,
+        buscarConvidados: buscarConvidados,
+        formatarBRL: formatarBRL
+    };
+});
