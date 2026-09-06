@@ -94,6 +94,22 @@ nomeados. Eles continuam na tabela e visíveis no painel do Supabase, que acessa
 banco com a chave de serviço e não passa pelas políticas de RLS — os noivos seguem
 enxergando as 113 linhas.
 
+## Estado do banco em 2026-09-06
+
+Sondagem via PostgREST com a chave publicável confirmou que as três tabelas já
+existem com as 18 colunas previstas neste documento, incluindo as adicionadas pelo
+`ALTER TABLE`. Todas estão vazias. O schema, portanto, já está aplicado.
+
+A mesma sondagem revelou que **RLS está desabilitado ou totalmente permissivo**: um
+`DELETE` enviado com a chave publicável — a mesma que ficará visível no código-fonte
+do site — retornou `204` nas três tabelas. O teste usou um `id` inexistente e não
+apagou nada, mas um filtro abrangente teria zerado a lista de presentes e os 113
+convidados.
+
+Isso antecede a integração e não é causado por ela. Mas publicar o site coloca a
+chave ao alcance de qualquer visitante, então **aplicar as políticas de RLS é
+pré-requisito de publicação**, não um passo de acabamento.
+
 ## Segurança
 
 A chave publicável aparece no código-fonte de qualquer visitante, então RLS é a
@@ -240,15 +256,20 @@ presentes, com item correspondente no menu de navegação.
 
 ## Entregáveis
 
-Três arquivos SQL para os noivos colarem no SQL Editor do Supabase, na ordem:
+Quatro arquivos SQL para os noivos colarem no SQL Editor do Supabase, na ordem:
 
 | Arquivo | Conteúdo |
 |---|---|
-| `sql/01_schema.sql` | `ALTER TABLE` dos presentes, `CREATE TABLE` de convidados e recados |
-| `sql/02_seed.sql` | 15 presentes com emoji/descrição/link/ordem + 113 convidados |
-| `sql/03_rls.sql` | Políticas da tabela acima |
+| `sql/01_schema.sql` | `ALTER TABLE` e `CREATE TABLE` idempotentes — já aplicados, roda como no-op |
+| `sql/02_rls.sql` | Políticas da tabela acima. **Bloqueia publicação enquanto não rodar** |
+| `sql/03_seed_presentes.sql` | 15 presentes com emoji, descrição, link e ordem |
+| `sql/04_seed_convidados.sql` | 113 convidados, gerado a partir do CSV |
 
-Mais as alterações em `index.html`, `css/style.css` e `js/script.js`.
+O SQL Editor roda como superusuário e não passa por RLS, então o seed funciona
+mesmo com as políticas já aplicadas.
+
+Mais as alterações em `index.html`, `css/style.css` e `js/script.js`, o novo
+`js/helpers.js` e o gerador `scripts/gerar_seed.py`.
 
 ## Verificação
 
