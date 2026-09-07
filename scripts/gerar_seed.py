@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera os arquivos de seed a partir de uma fonte unica de verdade.
+"""Gera os arquivos de seed dos presentes a partir de uma fonte unica de verdade.
 
 Roda so em desenvolvimento; nada aqui vai para o site publicado.
 
@@ -7,16 +7,15 @@ Roda so em desenvolvimento; nada aqui vai para o site publicado.
 
 Emite:
     sql/03_seed_presentes.sql   presentes para o Supabase
-    sql/04_seed_convidados.sql  convidados para o Supabase
     js/presentes-fallback.js    mesma lista, para o site funcionar sem banco
+
+A lista de CONVIDADOS nao passa por aqui: a fonte de verdade dela e a planilha
+do Google, lida e escrita pelo Web App em apps-script/Codigo.gs.
 """
-import csv
 import json
-import re
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-CSV_CONVIDADOS = RAIZ / "Cópia de Casamento - Convidados.csv"
 
 # Links do Mercado Pago, por valor. O link e do valor, nao do presente:
 # presentes de mesmo preco compartilham o mesmo link.
@@ -71,10 +70,6 @@ PRESENTES = [
     for i, (emoji, nome, categoria, preco, descricao) in enumerate(_PRESENTES)
 ]
 
-# Entradas que nao sao convidados nomeados: ficam no banco mas fora da busca.
-OCULTOS = {"namorada Renato", "Ogney"}
-
-
 def sql_txt(valor):
     """Literal de texto para SQL, com apostrofo duplicado. None vira NULL."""
     if valor is None:
@@ -82,31 +77,9 @@ def sql_txt(valor):
     return "'" + str(valor).replace("'", "''") + "'"
 
 
-def e_placeholder(nome):
-    return nome in OCULTOS or re.match(r"^banda\s*\d+$", nome, re.IGNORECASE) is not None
-
-
-def ler_convidados(caminho=CSV_CONVIDADOS):
-    """Le o CSV exportado da planilha. Colunas: Nomes, Confirmação."""
-    convidados = []
-    with open(caminho, encoding="utf-8", newline="") as f:
-        for linha in csv.DictReader(f):
-            nome = (linha.get("Nomes") or "").strip()
-            if not nome:
-                continue
-            marca = (linha.get("Confirmação") or "").strip().lower()
-            convidados.append({
-                "nome": nome,
-                # 'pago' na planilha significa "confirmou presenca".
-                "confirmacao": "pago" if marca == "pago" else None,
-                "visivel": not e_placeholder(nome),
-            })
-    return convidados
-
-
 CABECALHO = (
     "-- GERADO POR scripts/gerar_seed.py — NÃO EDITAR À MÃO.\n"
-    "-- Para alterar, edite o script (ou o CSV) e rode: python scripts/gerar_seed.py\n"
+    "-- Para alterar, edite o script e rode: python scripts/gerar_seed.py\n"
 )
 
 
@@ -135,30 +108,6 @@ def gerar_sql_presentes():
     )
 
 
-def gerar_sql_convidados(convidados):
-    linhas = ",\n".join(
-        "  ({nome}, {conf}, {vis})".format(
-            nome=sql_txt(c["nome"]),
-            conf=sql_txt(c["confirmacao"]),
-            vis="true" if c["visivel"] else "false",
-        )
-        for c in convidados
-    )
-    visiveis = sum(1 for c in convidados if c["visivel"])
-    confirmados = sum(1 for c in convidados if c["confirmacao"] == "pago")
-    return (
-        CABECALHO
-        + "-- Fonte: Cópia de Casamento - Convidados.csv\n"
-        + f"-- {len(convidados)} convidados · {visiveis} buscáveis no site · {confirmados} já confirmados\n"
-        + "-- Rodar no SQL Editor do Supabase, depois de 02_rls.sql.\n"
-        + "-- Recria a lista do zero; confirmações feitas pelo site são perdidas.\n\n"
-        + "delete from convidados;\n\n"
-        + "insert into convidados (nome, confirmacao, visivel)\nvalues\n"
-        + linhas
-        + ";\n"
-    )
-
-
 def gerar_fallback_js():
     dados = [dict(p, pagou=False) for p in PRESENTES]
     corpo = json.dumps(dados, ensure_ascii=False, indent=2)
@@ -179,9 +128,7 @@ def escrever(caminho, conteudo):
 
 
 def main():
-    convidados = ler_convidados()
     escrever(RAIZ / "sql" / "03_seed_presentes.sql", gerar_sql_presentes())
-    escrever(RAIZ / "sql" / "04_seed_convidados.sql", gerar_sql_convidados(convidados))
     escrever(RAIZ / "js" / "presentes-fallback.js", gerar_fallback_js())
 
 

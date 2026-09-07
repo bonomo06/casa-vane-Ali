@@ -323,8 +323,11 @@ let convidadosCarregados = [];
 let convidadoSelecionado = null;   // objeto {id, nome, confirmacao}, não string
 
 async function carregarConvidados() {
-    const dados = await WeddingDB.listarConvidados();
+    const dados = await WeddingSheets.listarConvidados();
     convidadosCarregados = dados || [];
+    // `chave` identifica a linha no DOM. A planilha não tem id, e usar o nome
+    // como atributo HTML exigiria escapar aspas — o índice é mais simples.
+    convidadosCarregados.forEach((c, i) => { c.chave = 'c' + i; });
     return dados !== null;
 }
 
@@ -375,18 +378,26 @@ function renderGuestResults(query) {
     }
 
     guestResults.innerHTML = achados.map(c => `
-        <div class="guest-item" data-id="${c.id}">
-            <span>👤 ${escaparHtml(c.nome)}${c.confirmacao === 'pago' ? ' <small style="color:var(--forest);">(já confirmado)</small>' : ''}</span>
+        <div class="guest-item" data-chave="${c.chave}">
+            <span>👤 ${escaparHtml(c.nome)}${rotuloConfirmacao(c.confirmacao)}</span>
             <span style="font-size:0.8rem; color:var(--forest); font-weight:700;">Selecionar ›</span>
         </div>
     `).join('');
 
     guestResults.querySelectorAll('.guest-item').forEach(item => {
         item.addEventListener('click', () => {
-            const c = convidadosCarregados.find(x => String(x.id) === item.dataset.id);
+            const c = convidadosCarregados.find(x => x.chave === item.dataset.chave);
             if (c) selectGuest(c);
         });
     });
+}
+
+// Mostra quem já respondeu, para a pessoa não confirmar duas vezes sem saber —
+// e para quem recusou por engano perceber e poder trocar.
+function rotuloConfirmacao(confirmacao) {
+    if (confirmacao === 'pago') return ' <small style="color:var(--forest);">(já confirmado)</small>';
+    if (confirmacao === 'recusado') return ' <small style="color:var(--rose);">(marcado como ausente)</small>';
+    return '';
 }
 
 function selectGuest(convidado) {
@@ -434,7 +445,7 @@ document.getElementById('confirmRsvpBtn')?.addEventListener('click', async (e) =
     botao.disabled = true;
     botao.textContent = 'Enviando...';
 
-    const ok = await WeddingDB.salvarConfirmacao(convidadoSelecionado.id, confirmacao);
+    const ok = await WeddingSheets.salvarConfirmacao(convidadoSelecionado.nome, confirmacao);
 
     botao.disabled = false;
     botao.textContent = 'Confirme sua Presença';

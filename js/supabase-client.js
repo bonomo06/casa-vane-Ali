@@ -1,5 +1,8 @@
-// Acesso ao banco. Todo SELECT/UPDATE/INSERT do site passa por aqui — nenhuma
-// outra parte do código conhece nomes de tabela ou de coluna.
+// Acesso ao banco: presentes e recados. Todo SELECT/UPDATE/INSERT do site passa
+// por aqui — nenhuma outra parte do código conhece nomes de tabela ou de coluna.
+//
+// A lista de convidados NÃO vive aqui: a fonte de verdade dela é a planilha do
+// Google, acessada por js/sheets-client.js.
 //
 // A chave abaixo é publicável por definição: ela aparece no código-fonte de
 // qualquer visitante. Quem protege os dados são as políticas de RLS em
@@ -54,36 +57,6 @@
         }
     }
 
-    async function listarConvidados() {
-        if (!cliente) return null;
-        try {
-            const { data, error } = await cliente
-                .from('convidados')
-                .select('id, nome, confirmacao')
-                .order('nome', { ascending: true });
-            if (error) throw error;
-            return data;
-        } catch (e) {
-            console.error('[WeddingDB] falha ao listar convidados:', e);
-            return null;
-        }
-    }
-
-    async function salvarConfirmacao(id, confirmacao) {
-        if (!cliente) return false;
-        try {
-            const { error } = await cliente
-                .from('convidados')
-                .update({ confirmacao: confirmacao, confirmado_em: new Date().toISOString() })
-                .eq('id', id);
-            if (error) throw error;
-            return true;
-        } catch (e) {
-            console.error('[WeddingDB] falha ao salvar confirmação:', e);
-            return false;
-        }
-    }
-
     async function salvarRecado(nome, mensagem) {
         if (!cliente) return false;
         try {
@@ -102,8 +75,6 @@
         disponivel: disponivel,
         listarPresentes: listarPresentes,
         marcarPresentePago: marcarPresentePago,
-        listarConvidados: listarConvidados,
-        salvarConfirmacao: salvarConfirmacao,
         salvarRecado: salvarRecado
     };
 })();

@@ -19,42 +19,6 @@ class TestEscapeSql(unittest.TestCase):
         self.assertEqual(gerar_seed.sql_txt(None), "NULL")
 
 
-class TestLeituraCsv(unittest.TestCase):
-    def setUp(self):
-        self.convidados = gerar_seed.ler_convidados(RAIZ / "Cópia de Casamento - Convidados.csv")
-
-    def test_total_de_convidados(self):
-        self.assertEqual(len(self.convidados), 113)
-
-    def test_espaco_no_fim_do_nome_e_removido(self):
-        nomes = [c["nome"] for c in self.convidados]
-        self.assertIn("Bruna Causo", nomes)
-        self.assertIn("Karen", nomes)
-        self.assertNotIn("Bruna Causo ", nomes)
-
-    def test_cinco_ja_confirmados_com_pago(self):
-        pagos = sorted(c["nome"] for c in self.convidados if c["confirmacao"] == "pago")
-        self.assertEqual(pagos, sorted([
-            "Theo Antoneli Calegari", "Bernardo Baliero Bertolotti",
-            "Julio Lavorenti Gardenal", "Theo Pires", "Ian Pires",
-        ]))
-
-    def test_pendentes_ficam_none(self):
-        pedro = next(c for c in self.convidados if c["nome"] == "Pedro Bonomo")
-        self.assertIsNone(pedro["confirmacao"])
-
-    def test_nove_placeholders_invisiveis(self):
-        ocultos = sorted(c["nome"] for c in self.convidados if not c["visivel"])
-        self.assertEqual(ocultos, sorted([
-            "banda1", "banda2", "banda 3", "banda 4", "banda 5", "banda 6",
-            "banda 7", "namorada Renato", "Ogney",
-        ]))
-
-    def test_convidado_real_e_visivel(self):
-        rosana = next(c for c in self.convidados if c["nome"] == "Rosana Gardenal Antoneli")
-        self.assertTrue(rosana["visivel"])
-
-
 class TestPresentes(unittest.TestCase):
     def test_sao_quinze(self):
         self.assertEqual(len(gerar_seed.PRESENTES), 15)
@@ -103,13 +67,26 @@ class TestGeracao(unittest.TestCase):
     def setUpClass(cls):
         subprocess.run([sys.executable, str(RAIZ / "scripts" / "gerar_seed.py")], check=True)
 
-    def test_gera_os_tres_arquivos(self):
-        for caminho in ("sql/03_seed_presentes.sql", "sql/04_seed_convidados.sql", "js/presentes-fallback.js"):
+    def test_gera_os_arquivos(self):
+        for caminho in ("sql/03_seed_presentes.sql", "js/presentes-fallback.js"):
             self.assertTrue((RAIZ / caminho).exists(), caminho)
 
-    def test_sql_de_convidados_tem_113_inserts(self):
-        texto = (RAIZ / "sql" / "04_seed_convidados.sql").read_text(encoding="utf-8")
-        self.assertEqual(texto.count("\n  ("), 113)
+    def test_sql_de_presentes_traz_os_15_nomes(self):
+        texto = (RAIZ / "sql" / "03_seed_presentes.sql").read_text(encoding="utf-8")
+        for p in gerar_seed.PRESENTES:
+            self.assertIn(gerar_seed.sql_txt(p["nome"]), texto, p["nome"])
+        self.assertEqual(texto.count("https://mpago.la/"), 15)
+
+    def test_apostrofo_escapado_no_sql_gerado(self):
+        # A descricao do ensaio fotografico tem "antes do 'sim'". Sem escape o
+        # INSERT inteiro quebraria no Supabase.
+        texto = (RAIZ / "sql" / "03_seed_presentes.sql").read_text(encoding="utf-8")
+        self.assertIn("antes do ''sim''", texto)
+
+    def test_nao_gera_mais_seed_de_convidados(self):
+        # A lista de convidados vive na planilha do Google. Um arquivo SQL de
+        # convidados voltando a existir significaria duas fontes de verdade.
+        self.assertFalse((RAIZ / "sql" / "04_seed_convidados.sql").exists())
 
     def test_fallback_js_expoe_a_variavel(self):
         texto = (RAIZ / "js" / "presentes-fallback.js").read_text(encoding="utf-8")

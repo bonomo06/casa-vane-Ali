@@ -111,11 +111,37 @@ document.getElementById('f').addEventListener('load', async () => {
     await esperar(150);
     ok(d.querySelector('#avisoValorLivre').textContent === '', 'valor exato não mostra aviso');
 
-    // --- helpers e banco ---
-    ok(w.WeddingDB.disponivel(), 'cliente Supabase inicializado');
-    const convidados = await w.WeddingDB.listarConvidados();
-    ok(Array.isArray(convidados), 'listarConvidados respondeu (' +
-       (convidados ? convidados.length + ' convidados' : 'erro') + ')');
+    // --- clientes ---
+    ok(w.WeddingDB.disponivel(), 'cliente Supabase inicializado (presentes e recados)');
+    ok(typeof w.WeddingDB.listarConvidados === 'undefined',
+       'WeddingDB não expõe mais convidados (fonte agora é a planilha)');
+    ok(typeof w.WeddingSheets === 'object', 'cliente da planilha carregado');
+
+    // --- planilha do Google ---
+    if (!w.WeddingSheets.configurado()) {
+        linhas.push('PULADO URL_APPS_SCRIPT não preenchida — checagens da planilha não rodaram');
+    } else {
+        const convidados = await w.WeddingSheets.listarConvidados();
+        ok(Array.isArray(convidados), 'planilha respondeu a leitura (' +
+           (convidados ? convidados.length + ' convidados' : 'ERRO') + ')');
+        if (Array.isArray(convidados)) {
+            ok(convidados.length > 100, 'lista tem mais de 100 convidados');
+            ok(convidados.every(c => c.nome && typeof c.nome === 'string'),
+               'todo convidado tem nome preenchido');
+            ok(!convidados.some(c => /^banda\s*\d+$/i.test(c.nome)),
+               'placeholders "banda N" ficam fora da lista');
+            ok(convidados.some(c => c.nome === 'namorada Renato'),
+               '"namorada Renato" aparece na lista');
+            ok(convidados.some(c => c.nome === 'Ogney'), '"Ogney" aparece na lista');
+            ok(convidados.every(c => c.confirmacao === null ||
+                                     c.confirmacao === 'pago' ||
+                                     c.confirmacao === 'recusado'),
+               'confirmacao só assume null, "pago" ou "recusado"');
+            // Busca sem acento sobre os dados reais da planilha.
+            const achados = w.WeddingHelpers.buscarConvidados(convidados, 'goncalves');
+            ok(achados.length >= 1, 'busca por "goncalves" acha nome com cedilha na planilha');
+        }
+    }
 
     document.getElementById('out').textContent =
         linhas.join('\n') + '\n\nRESULTADO: ' +

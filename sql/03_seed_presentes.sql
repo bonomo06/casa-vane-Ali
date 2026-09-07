@@ -1,5 +1,5 @@
 -- GERADO POR scripts/gerar_seed.py — NÃO EDITAR À MÃO.
--- Para alterar, edite o script (ou o CSV) e rode: python scripts/gerar_seed.py
+-- Para alterar, edite o script e rode: python scripts/gerar_seed.py
 -- Rodar no SQL Editor do Supabase, depois de 02_rls.sql.
 -- Recria a lista do zero; presentes ja marcados como pagos sao perdidos.
 

@@ -290,3 +290,64 @@ explícito por funcionalidade:
 - Valor livre de R$ 320 oferece R$ 300 e abre o link correto.
 - Supabase indisponível: lista cai para o fallback embutido e a busca avisa o erro.
 - Sétima foto do carrossel mostra o casal centralizado.
+
+---
+
+## Emenda 2026-09-06 — convidados migram para o Google Sheets
+
+Os noivos pediram que as confirmações fossem gravadas na planilha do Google, não
+no Supabase, para trabalharem onde já estão acostumados. Isto substitui a seção
+"Importação dos convidados" e a parte de `convidados` do "Modelo de dados".
+
+### O que forçou o desenho
+
+A API key fornecida **não escreve**. O Google recusa com
+`401 UNAUTHENTICATED / "API keys are not supported by this API"`: uma API key só
+lê dados públicos, e escrever exige credencial que identifique uma pessoa. Nenhuma
+delas pode ficar num site estático — a chave privada de uma conta de serviço no
+código-fonte daria a qualquer visitante poder de editar e apagar a planilha.
+
+Descoberta relacionada: a planilha estava **pública**, e tem 4 abas, duas delas de
+custos do casamento. Foi possível baixar tudo sem autenticação.
+
+### Solução
+
+Um **Google Apps Script Web App** (`apps-script/Codigo.gs`) faz leitura *e*
+escrita. A autorização mora na conta Google dona da planilha; o site só conhece
+uma URL e não carrega credencial nenhuma.
+
+Fazer o script também ler resolve o problema de privacidade de graça: a planilha
+volta a ser privada, e a Vanessa segue com acesso por compartilhamento direto
+com o e-mail dela. A API key deixa de ser usada e pode ser revogada.
+
+```
+js/script.js → js/sheets-client.js → Apps Script Web App → planilha (privada)
+                                     (executa como o dono)
+```
+
+| Rota | O que faz |
+|---|---|
+| `doGet` | Devolve os convidados em JSON, filtrando `banda N` |
+| `doPost` | Recebe `{nome, confirmacao}`, acha a linha, escreve colunas B e C |
+
+Detalhes que não são óbvios:
+
+- O POST usa `Content-Type: text/plain`. Com `application/json` o browser manda um
+  preflight `OPTIONS`, que o Apps Script não responde — a chamada falha por CORS
+  sem erro legível.
+- `LockService` serializa as escritas: sem ele, duas confirmações simultâneas
+  poderiam procurar a linha sobre um estado desatualizado.
+- A identidade do convidado passa a ser o **nome**, já que a planilha não tem id.
+  Os 113 nomes são únicos, o que foi verificado.
+- Republicar é obrigatório após editar o `.gs`: salvar não atualiza a URL.
+
+### Consequências
+
+- `convidados` sai do Supabase. `sql/04_seed_convidados.sql` e o CSV foram
+  apagados, e `scripts/gerar_seed.py` gera só os presentes — uma fonte de verdade
+  por dado, sem cópias divergindo.
+- `visivel` deixa de existir como coluna. Os placeholders são filtrados por
+  regex no Apps Script, e `namorada Renato` e `Ogney` passam a ser visíveis por
+  decisão dos noivos: só `banda 1`–`banda 7` ficam fora da busca.
+- Adicionar convidado agora é escrever numa linha da planilha, sem tocar em código.
+- Presentes e recados seguem no Supabase, inalterados.
