@@ -119,7 +119,21 @@ document.getElementById('f').addEventListener('load', async () => {
 
     // --- planilha do Google ---
     if (!w.WeddingSheets.configurado()) {
-        linhas.push('PULADO URL_APPS_SCRIPT não preenchida — checagens da planilha não rodaram');
+        // Diagnóstico acionável em vez de um "pulado" mudo.
+        linhas.push('PULADO checagens da planilha não rodaram — URL_APPS_SCRIPT está ' +
+                    '"' + w.WeddingSheets.estadoDaUrl() + '" (veja js/sheets-client.js)');
+
+        // Mesmo sem a planilha, o convidado não pode ver mensagem enganosa.
+        d.querySelector('#openRsvpModalBtn').click();
+        await esperar(1200);
+        const aviso = d.querySelector('#guestResults').textContent;
+        ok(aviso.includes('fora do ar'),
+           'sem URL configurada, o convidado vê "fora do ar" e não "tente de novo"');
+        ok(!aviso.includes('Tenta de novo'),
+           'não promete uma nova tentativa que nunca vai funcionar');
+        ok(aviso.includes('WhatsApp'), 'oferece uma saída ao convidado (WhatsApp)');
+        d.querySelector('#closeRsvpModalBtn').click();
+        await esperar(200);
     } else {
         const convidados = await w.WeddingSheets.listarConvidados();
         ok(Array.isArray(convidados), 'planilha respondeu a leitura (' +

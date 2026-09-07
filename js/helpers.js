@@ -68,6 +68,26 @@
         });
     }
 
+    // Valida a URL do Web App do Apps Script. Devolve 'ok', 'vazia',
+    // 'url-de-teste' ou 'formato-desconhecido' — cada caso merece uma mensagem
+    // diferente, porque "não preenchi" e "preenchi com a URL errada" pedem
+    // ações opostas de quem está configurando.
+    //
+    // Dois formatos são válidos, e esquecer o segundo é fácil:
+    //   conta pessoal → /macros/s/<id>/exec
+    //   Workspace     → /a/macros/<dominio>/s/<id>/exec
+    function validarUrlAppsScript(url) {
+        var texto = String(url === null || url === undefined ? '' : url).trim();
+        if (!texto) return 'vazia';
+
+        var base = 'https://script.google.com/(?:a/macros/[^/]+|macros)/s/[^/]+/';
+        if (new RegExp('^' + base + 'exec(?:[/?#]|$)').test(texto)) return 'ok';
+        // A URL /dev só responde para quem está logado como dono do script,
+        // então um convidado sempre receberia erro.
+        if (new RegExp('^' + base + 'dev(?:[/?#]|$)').test(texto)) return 'url-de-teste';
+        return 'formato-desconhecido';
+    }
+
     function formatarBRL(valor) {
         return 'R$ ' + Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
     }
@@ -79,6 +99,7 @@
         linkParaValor: linkParaValor,
         normalizar: normalizar,
         buscarConvidados: buscarConvidados,
+        validarUrlAppsScript: validarUrlAppsScript,
         formatarBRL: formatarBRL
     };
 });

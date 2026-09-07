@@ -72,6 +72,46 @@ test('formatarBRL usa ponto de milhar e nao mostra centavos redondos', () => {
     assert.strictEqual(H.formatarBRL(1200), 'R$ 1.200');
 });
 
+test('validarUrlAppsScript aceita URL de conta pessoal', () => {
+    assert.strictEqual(
+        H.validarUrlAppsScript('https://script.google.com/macros/s/AKfycbxAbC123_-def456/exec'),
+        'ok');
+});
+
+test('validarUrlAppsScript aceita URL de conta Google Workspace', () => {
+    // Contas com domínio próprio recebem /a/macros/<dominio>/ no caminho.
+    assert.strictEqual(
+        H.validarUrlAppsScript('https://script.google.com/a/macros/makevendas.com.br/s/AKfycbxAbC123/exec'),
+        'ok');
+});
+
+test('validarUrlAppsScript tolera barra final e querystring', () => {
+    assert.strictEqual(
+        H.validarUrlAppsScript('https://script.google.com/macros/s/AKfycbxAbC123/exec/'), 'ok');
+    assert.strictEqual(
+        H.validarUrlAppsScript('https://script.google.com/macros/s/AKfycbxAbC123/exec?x=1'), 'ok');
+});
+
+test('validarUrlAppsScript reconhece a URL vazia', () => {
+    assert.strictEqual(H.validarUrlAppsScript(''), 'vazia');
+    assert.strictEqual(H.validarUrlAppsScript('   '), 'vazia');
+    assert.strictEqual(H.validarUrlAppsScript(null), 'vazia');
+});
+
+test('validarUrlAppsScript identifica a URL de teste /dev', () => {
+    // Erro comum: copiar a URL de teste em vez da de produção. A /dev só
+    // funciona para quem está logado como dono do script.
+    assert.strictEqual(
+        H.validarUrlAppsScript('https://script.google.com/macros/s/AKfycbxAbC123/dev'),
+        'url-de-teste');
+});
+
+test('validarUrlAppsScript rejeita qualquer outra coisa', () => {
+    assert.strictEqual(H.validarUrlAppsScript('https://docs.google.com/spreadsheets/d/abc/edit'),
+        'formato-desconhecido');
+    assert.strictEqual(H.validarUrlAppsScript('cole aqui a url'), 'formato-desconhecido');
+});
+
 test('VALORES_COM_LINK tem os 15 valores em ordem crescente', () => {
     assert.strictEqual(H.VALORES_COM_LINK.length, 15);
     const ordenado = [...H.VALORES_COM_LINK].sort((a, b) => a - b);

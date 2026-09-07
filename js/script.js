@@ -358,7 +358,18 @@ function renderGuestResults(query) {
     if (!guestResults) return;
 
     if (!convidadosCarregados.length) {
-        guestResults.innerHTML = '<div style="font-size:0.86rem; color:var(--ink-soft); padding:8px;">Não conseguimos carregar a lista agora. Tenta de novo em instantes.</div>';
+        // Duas causas possíveis: a planilha não respondeu (transitório, vale
+        // tentar de novo) ou a URL do Apps Script está errada (permanente até
+        // alguém arrumar — prometer "tente de novo" seria mentira). O console
+        // recebe o diagnóstico técnico; o convidado, uma saída que funciona.
+        const transitorio = WeddingSheets.configurado();
+        guestResults.innerHTML =
+            '<div style="font-size:0.86rem; color:var(--ink-soft); padding:8px; line-height:1.5;">' +
+            (transitorio
+                ? 'Não conseguimos carregar a lista de convidados agora. Tenta de novo em instantes?'
+                : 'A busca de nomes está fora do ar no momento.') +
+            '<br>Se continuar assim, chama a Vanessa ou o Ali no WhatsApp que a gente confirma por você. 💚' +
+            '</div>';
         return;
     }
 

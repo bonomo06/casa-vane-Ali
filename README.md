@@ -80,13 +80,13 @@ link novo, atualizar os dois; há um teste que falha se divergirem.
 ## Testes
 
     python -m unittest discover -s tests    # gerador de seed (13 testes)
-    node --test                             # helpers do site (15 testes)
+    node --test                             # helpers do site (21 testes)
 
 Rodar os dois a partir da raiz do projeto. `node --test` sem argumento descobre
 os arquivos sozinho; passar `tests/` quebra no Git Bash do Windows, que converte
 o caminho antes de o Node vê-lo.
 
-Para a verificação de ponta a ponta no navegador (31 checagens: renderização,
+Para a verificação de ponta a ponta no navegador (34 checagens: renderização,
 os 3 passos do pagamento, valor livre, paleta, enquadramento da foto):
 
     python -m http.server 8765

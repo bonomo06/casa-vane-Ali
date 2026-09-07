@@ -8,15 +8,32 @@
     // Formato: https://script.google.com/macros/s/AKfycb.../exec
     var URL_APPS_SCRIPT = '';
 
+    var MENSAGENS = {
+        'vazia':
+            'URL_APPS_SCRIPT está vazia em js/sheets-client.js. Publique ' +
+            'apps-script/Codigo.gs (Implantar → Nova implantação → App da Web) e cole ' +
+            'aqui a URL gerada.',
+        'url-de-teste':
+            'URL_APPS_SCRIPT aponta para a URL de TESTE (termina em /dev). Ela só ' +
+            'responde para quem está logado como dono do script, então nenhum convidado ' +
+            'conseguiria usar. Pegue a URL de produção, que termina em /exec, em ' +
+            'Implantar → Gerenciar implantações.',
+        'formato-desconhecido':
+            'URL_APPS_SCRIPT não parece uma URL de Web App do Apps Script. O formato ' +
+            'esperado é https://script.google.com/macros/s/<id>/exec — confira se não ' +
+            'colou o link da planilha por engano.'
+    };
+
+    function estadoDaUrl() {
+        return WeddingHelpers.validarUrlAppsScript(URL_APPS_SCRIPT);
+    }
+
     function configurado() {
-        return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(URL_APPS_SCRIPT);
+        return estadoDaUrl() === 'ok';
     }
 
     function avisarNaoConfigurado(operacao) {
-        console.error(
-            '[WeddingSheets] ' + operacao + ' cancelada: URL_APPS_SCRIPT não foi preenchida ' +
-            'em js/sheets-client.js. Publique apps-script/Codigo.gs e cole a URL do Web App lá.'
-        );
+        console.error('[WeddingSheets] ' + operacao + ' cancelada. ' + MENSAGENS[estadoDaUrl()]);
     }
 
     // Devolve null (e não []) quando falha, para quem chama distinguir
@@ -67,6 +84,7 @@
 
     window.WeddingSheets = {
         configurado: configurado,
+        estadoDaUrl: estadoDaUrl,
         listarConvidados: listarConvidados,
         salvarConfirmacao: salvarConfirmacao
     };
