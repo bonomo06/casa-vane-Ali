@@ -33,12 +33,17 @@ LINKS = {
     700: "https://mpago.la/21zartN",
     800: "https://mpago.la/1rn5fXk",
     1000: "https://mpago.la/21DHeUS",
-    1200: "https://mpago.la/2qwk9Ht",  # sem presente associado
-    1500: "https://mpago.la/1r2Wf66",  # sem presente associado
+    1200: "https://mpago.la/2qwk9Ht",
+    1500: "https://mpago.la/1r2Wf66",
 }
 
 # Precos ajustados aos links disponiveis: Brincos 120->150, Redes 180->200,
-# Fila do bar 900->1000.
+# Fila do bar 900->1000. Musica na banda subiu para 1200 e o jantar no ape
+# entrou em 1500 a pedido dos noivos.
+#
+# Os tres ultimos sao "perks": quem presenteia recebe algo em troca, e por isso
+# custam mais. Como qualquer presente pode ser dado por mais de uma pessoa, nao
+# ha exclusividade — dois convidados podem escolher a musica, por exemplo.
 _PRESENTES = [
     ("👞", "Sapatos dos noivos", "casal", 500, "Porque ir descalço é feio."),
     ("🧁", "Cota de doces finos", "casal", 250, "A nutri mandou repor a glicose depois de tantos drinks."),
@@ -54,7 +59,8 @@ _PRESENTES = [
     ("🪟", "Redes de proteção", "pets", 200, "Para a Ágata ficar na janela com segurança."),
     ("🏡", "Estadia do casal em Arujá", "casal", 800, "Um descanso super especial e merecido para os noivos."),
     ("🍻", "Preferência na fila do bar", "casal", 1000, "Passe na frente e não perca nenhum segundo da festa!"),
-    ("🎵", "Escolher uma música no repertório da banda", "casal", 1000, "Sua música favorita tocando ao vivo para agitar a pista!"),
+    ("🎵", "Escolher uma música no repertório da banda", "casal", 1200, "Sua música favorita tocando ao vivo para agitar a pista!"),
+    ("🍝", "Jantar no apê", "casal", 1500, "Vem jantar com a gente no apartamento novo: comida boa, vinho e conversa até tarde."),
 ]
 
 PRESENTES = [

@@ -1433,17 +1433,12 @@ footer .pets-footer {
 }
 
 /* ---------- PRESENTE JÁ DADO ---------- */
+/* Sem opacidade nem grayscale de propósito: o presente continua disponível para
+   quem quiser contribuir também, e apagá-lo visualmente diria o contrário. O
+   selo informa; não desabilita. */
 .gift-card.presenteado {
-    opacity: 0.55;
-    filter: grayscale(0.85);
     position: relative;
-}
-
-.gift-card.presenteado .present-btn {
-    background: transparent;
-    border: 1.5px solid var(--ink-soft);
-    color: var(--ink-soft);
-    cursor: not-allowed;
+    border-color: var(--forest-light);
 }
 
 .gift-badge-dado {
@@ -1457,30 +1452,6 @@ footer .pets-footer {
     padding: 4px 10px;
     border-radius: 999px;
     letter-spacing: 0.02em;
-}
-
-/* ---------- AVISO IRREVERSÍVEL (passo 3 do pagamento) ---------- */
-.aviso-irreversivel {
-    background: var(--rose-pale);
-    border: 1.5px solid var(--rose-light);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 18px;
-    text-align: left;
-}
-
-.aviso-irreversivel strong {
-    display: block;
-    color: var(--rose);
-    font-size: 0.92rem;
-    margin-bottom: 8px;
-}
-
-.aviso-irreversivel p {
-    font-size: 0.86rem;
-    color: var(--ink-soft);
-    line-height: 1.5;
-    margin: 0;
 }
 
 /* ---------- ENQUADRAMENTO DA FOTO 7 ---------- */

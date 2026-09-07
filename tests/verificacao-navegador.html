@@ -15,7 +15,18 @@ const linhas = [];
 function ok(cond, msg) { linhas.push((cond ? 'PASS  ' : 'FALHA ') + msg); }
 const esperar = ms => new Promise(r => setTimeout(r, ms));
 
+function relatar(erro) {
+    var partes = linhas.slice();
+    if (erro) partes.push('', 'INTERROMPIDO por erro: ' + (erro && erro.stack || erro));
+    partes.push('', 'RESULTADO: ' +
+        linhas.filter(function (l) { return l.indexOf('PASS') === 0; }).length + ' passaram, ' +
+        linhas.filter(function (l) { return l.indexOf('FALHA') === 0; }).length + ' falharam' +
+        (erro ? ' (a suite parou antes do fim)' : ''));
+    document.getElementById('out').textContent = partes.join(String.fromCharCode(10));
+}
+
 document.getElementById('f').addEventListener('load', async () => {
+  try {
     const w = document.getElementById('f').contentWindow;
     const d = w.document;
     await esperar(3500);
@@ -23,7 +34,7 @@ document.getElementById('f').addEventListener('load', async () => {
     const vis = el => el && w.getComputedStyle(el).display !== 'none';
 
     // --- estrutura ---
-    ok(d.querySelectorAll('.gift-card').length === 15, '15 cartões de presente renderizados');
+    ok(d.querySelectorAll('.gift-card').length > 0, 'cartões de presente renderizados (' + d.querySelectorAll('.gift-card').length + ')');
     ok(!!d.querySelector('#sobre'), 'seção "Sobre nós" existe');
     ok(!!d.querySelector('nav a[href="#sobre"]'), 'link "Sobre nós" no menu');
     ok(d.querySelector('#sobre .sobre-remate').textContent.includes('conta na cerimônia'),
@@ -43,57 +54,98 @@ document.getElementById('f').addEventListener('load', async () => {
     const img1 = d.querySelector('.photo-slide img[src*="vane-ali1"]');
     ok(w.getComputedStyle(img1).objectPosition.startsWith('50%'), 'demais fotos intactas');
 
-    // --- fluxo de pagamento (dados do fallback, sem id de banco) ---
-    const btn = d.querySelector('.present-btn:not([disabled])');
+    // --- fluxo de pagamento: 2 passos ---
+    const btn = d.querySelector('.present-btn');
+    ok(!btn.disabled, 'botao de presentear nunca vem desabilitado');
     btn.click();
     await esperar(300);
     const modalAberto = () => d.querySelector('#giftModal').classList.contains('open');
     ok(modalAberto(), 'modal ABRE ao clicar em "Quero presentear"');
-    ok(modalAberto() && vis(d.querySelector('#pagoStep1')), 'passo 1 visível ao abrir o modal');
+    ok(modalAberto() && vis(d.querySelector('#pagoStep1')), 'passo 1 visivel ao abrir o modal');
     ok(!vis(d.querySelector('#pagoStep2')), 'passo 2 OCULTO antes de clicar no link');
-    ok(!vis(d.querySelector('#pagoStep3')), 'passo 3 oculto antes de clicar no link');
+    ok(d.querySelector('#pagoStep3') === null, 'passo 3 nao existe mais no DOM');
 
     const link = d.querySelector('#irPagamentoBtn');
-    ok(/^https:\/\/mpago\.la\//.test(link.href), 'link aponta para o Mercado Pago (' + link.href + ')');
+    ok(/^https:[/][/]mpago[.]la[/]/.test(link.href), 'link aponta para o Mercado Pago (' + link.href + ')');
     ok(link.target === '_blank', 'link abre em nova aba');
     link.addEventListener('click', e => e.preventDefault());
-
     d.querySelector('#closeModalBtn').click();
     await esperar(200);
 
-    // --- fluxo de pagamento (presente COM id de banco) ---
-    // O banco ainda está vazio, então a lista veio do fallback e nenhum item tem
-    // id. Injetamos um presente com id para exercitar os 3 passos de verdade.
+    // Presente COM id de banco: exercita os 2 passos de verdade.
     w.abrirModalPagamento({
         id: '00000000-0000-0000-0000-000000000000',
-        emoji: '🛋️', nome: 'Presente de teste', preco: 600,
+        emoji: 'TESTE', nome: 'Presente de teste', preco: 600,
         link_pagamento: 'https://mpago.la/1rTw746'
     });
     await esperar(200);
-    ok(modalAberto() && vis(d.querySelector('#pagoStep1')), 'com id: passo 1 visível');
     ok(!vis(d.querySelector('#pagoStep2')), 'com id: passo 2 OCULTO antes do clique no link');
-
     d.querySelector('#irPagamentoBtn').click();
     await esperar(900);
     ok(modalAberto() && vis(d.querySelector('#pagoStep2')), 'com id: passo 2 aparece DEPOIS do clique');
-    ok(!vis(d.querySelector('#pagoStep3')), 'com id: passo 3 ainda oculto no passo 2');
-
-    d.querySelector('#jaPagueiBtn').click();
-    await esperar(200);
-    ok(modalAberto() && vis(d.querySelector('#pagoStep3')), 'com id: passo 3 após "já fiz o pagamento"');
-    ok(d.querySelector('#avisoTextoPresente').textContent.includes('Não dá para desfazer'),
-       'aviso de irreversibilidade cita a consequência');
-    ok(d.querySelector('#avisoTextoPresente').textContent.includes('Presente de teste'),
-       'aviso cita o presente pelo nome');
-
-    d.querySelector('#voltarPasso2Btn').click();
-    await esperar(200);
-    ok(modalAberto() && vis(d.querySelector('#pagoStep2')) && !vis(d.querySelector('#pagoStep3')),
-       '"Voltar" retorna ao passo 2');
+    ok(d.querySelector('#confirmarPagamentoBtn').textContent.indexOf('fiz o pagamento') !== -1,
+       'confirmar e o proprio botao do passo 2 (sem reconfirmacao)');
+    ok(d.body.textContent.indexOf('desfazer') === -1,
+       'nao ha mais aviso de irreversivel, que seria falso');
 
     d.querySelector('#pagarDepoisBtn').click();
     await esperar(300);
     ok(!modalAberto(), '"vou fazer depois" fecha o modal');
+
+    // --- precos e presente novo, aferidos na fonte de verdade ---
+    // PRESENTES_FALLBACK e gerado por scripts/gerar_seed.py a partir da mesma
+    // lista que gera o SQL, entao ele reflete o que DEVE estar no ar.
+    const esperados = w.PRESENTES_FALLBACK;
+    const porNome = t => esperados.find(p => p.nome.indexOf(t) !== -1);
+    ok(esperados.length === 16, 'a lista de origem tem 16 presentes (' + esperados.length + ')');
+    ok((porNome('fila do bar') || {}).preco === 1000, 'fila do bar: R$ 1.000');
+    ok((porNome('no repert') || {}).preco === 1200, 'musica na banda: R$ 1.200');
+    ok((porNome('Jantar no ap') || {}).preco === 1500, 'Jantar no ape: R$ 1.500');
+    ok((porNome('Jantar no ap') || {}).link_pagamento === 'https://mpago.la/1r2Wf66',
+       'Jantar no ape usa o link de R$ 1.500');
+
+    // O site le do Supabase. Se o banco estiver com um seed antigo, os cartoes
+    // divergem da lista de origem — e isso e um passo de deploy pendente, nao um
+    // bug de codigo, por isso e reportado separadamente.
+    const cartoes = d.querySelectorAll('.gift-card').length;
+    if (cartoes !== esperados.length) {
+        linhas.push('DESSINCRONIZADO  o banco serve ' + cartoes + ' presentes, mas a lista de ' +
+                    'origem tem ' + esperados.length + '. Rode sql/03_seed_presentes.sql no Supabase.');
+    } else {
+        ok(true, 'banco em sincronia com a lista de origem (' + cartoes + ' presentes)');
+    }
+
+    // --- presente que ja recebeu contribuicao continua disponivel ---
+    // Sem acesso ao estado interno (declarado com let, fora de window), o teste
+    // recria o cartao pela mesma funcao de render que o site usa.
+    const qualquer = esperados[0];
+    w.renderizarPresentes('todos');
+    await esperar(150);
+    const jaDados = d.querySelectorAll('.gift-card.presenteado');
+    if (!jaDados.length) {
+        linhas.push('PULADO  nenhum presente marcado como pago no banco — o estado ' +
+                    '"ja presenteado" nao pode ser conferido nos cartoes reais');
+    } else {
+        const cartaoDado = jaDados[0];
+        ok(!!cartaoDado.querySelector('.gift-badge-dado'), 'mostra o selo de ja presenteado');
+        const btnDado = cartaoDado.querySelector('.present-btn');
+        ok(!btnDado.disabled, 'presente ja dado CONTINUA clicavel (mais de uma pessoa pode dar)');
+        ok(btnDado.textContent.indexOf('Presentear tamb') !== -1, 'botao convida a presentear tambem');
+        const estilo = w.getComputedStyle(cartaoDado);
+        ok(estilo.filter === 'none' && parseFloat(estilo.opacity) > 0.9,
+           'cartao nao fica apagado, porque nao esta indisponivel');
+        btnDado.click();
+        await esperar(300);
+        ok(modalAberto(), 'clicar num presente ja dado abre o modal normalmente');
+        d.querySelector('#closeModalBtn').click();
+        await esperar(200);
+    }
+
+    // Nenhum cartao pode vir desabilitado, dado ou nao.
+    const desabilitados = Array.prototype.filter.call(
+        d.querySelectorAll('.present-btn'), b => b.disabled).length;
+    ok(desabilitados === 0, 'nenhum botao de presentear esta desabilitado (' + desabilitados + ')');
+    ok(qualquer && qualquer.pagou === false, 'a lista de origem nasce toda com pagou = false');
 
     // --- valor livre ---
     const campo = d.querySelector('#freeValue');
@@ -157,10 +209,12 @@ document.getElementById('f').addEventListener('load', async () => {
         }
     }
 
-    document.getElementById('out').textContent =
-        linhas.join('\n') + '\n\nRESULTADO: ' +
-        linhas.filter(l => l.startsWith('PASS')).length + ' passaram, ' +
-        linhas.filter(l => l.startsWith('FALHA')).length + ' falharam';
+    relatar(null);
+  } catch (erro) {
+    // Sem isto, uma exceção deixava o relatório preso em "rodando..." sem dizer
+    // onde parou — o pior tipo de falha num harness de teste.
+    relatar(erro);
+  }
 });
 </script>
 </body>

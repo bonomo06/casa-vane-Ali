@@ -22,4 +22,5 @@ values
   (12, '🪟', 'Redes de proteção', 'pets', 200, 'Para a Ágata ficar na janela com segurança.', 'https://mpago.la/1DxCxep'),
   (13, '🏡', 'Estadia do casal em Arujá', 'casal', 800, 'Um descanso super especial e merecido para os noivos.', 'https://mpago.la/1rn5fXk'),
   (14, '🍻', 'Preferência na fila do bar', 'casal', 1000, 'Passe na frente e não perca nenhum segundo da festa!', 'https://mpago.la/21DHeUS'),
-  (15, '🎵', 'Escolher uma música no repertório da banda', 'casal', 1000, 'Sua música favorita tocando ao vivo para agitar a pista!', 'https://mpago.la/21DHeUS');
+  (15, '🎵', 'Escolher uma música no repertório da banda', 'casal', 1200, 'Sua música favorita tocando ao vivo para agitar a pista!', 'https://mpago.la/2qwk9Ht'),
+  (16, '🍝', 'Jantar no apê', 'casal', 1500, 'Vem jantar com a gente no apartamento novo: comida boa, vinho e conversa até tarde.', 'https://mpago.la/1r2Wf66');

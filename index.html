@@ -266,7 +266,7 @@
     <!-- TOAST -->
     <div id="toast"></div>
 
-    <!-- MODAL DE PAGAMENTO — 3 passos -->
+    <!-- MODAL DE PAGAMENTO — 2 passos -->
     <div class="modal-overlay" id="giftModal">
         <div class="modal-box">
             <h3 id="modalTitle">Presentear</h3>
@@ -285,27 +285,18 @@
                 </div>
             </div>
 
-            <!-- PASSO 2 — só aparece depois do clique no passo 1 -->
+            <!-- PASSO 2 — só aparece depois do clique no passo 1.
+                 Não existe passo 3: como o mesmo presente pode ser dado por
+                 várias pessoas, confirmar não tira nada da lista e não há nada
+                 de irreversível para justificar uma reconfirmação. -->
             <div id="pagoStep2" style="display:none;">
                 <p style="font-size:0.9rem; color:var(--ink-soft); margin-bottom:16px; line-height:1.5;">
                     Abrimos o pagamento em outra aba 👉<br>
-                    Quando terminar, volta aqui para a gente tirar esse presente da lista.
+                    Quando terminar, volta aqui pra gente saber que esse presente veio de você.
                 </p>
                 <div class="modal-actions">
-                    <button class="btn btn-primary" id="jaPagueiBtn">✅ Já fiz o pagamento</button>
+                    <button class="btn btn-primary" id="confirmarPagamentoBtn">✅ Já fiz o pagamento</button>
                     <button class="btn-close" id="pagarDepoisBtn">Ainda não / vou fazer depois</button>
-                </div>
-            </div>
-
-            <!-- PASSO 3 — reconfirmação -->
-            <div id="pagoStep3" style="display:none;">
-                <div class="aviso-irreversivel">
-                    <strong>⚠️ Só confirme se o pagamento foi concluído de verdade.</strong>
-                    <p id="avisoTextoPresente"></p>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn btn-primary" id="confirmarPagamentoBtn">Sim, tenho certeza — paguei</button>
-                    <button class="btn-close" id="voltarPasso2Btn">Voltar</button>
                 </div>
             </div>
         </div>

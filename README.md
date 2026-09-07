@@ -58,8 +58,11 @@ no `apps-script/Codigo.gs`.
 **No painel do Supabase (Table Editor):**
 
 - **Ler os recados:** tabela `recados`. Eles não aparecem no site de propósito.
-- **Desfazer um presente marcado por engano:** tabela `presentes_casamento`, mudar
-  `pagou` para `false`. O site não consegue fazer isso — só vocês.
+- **Ver o que já foi presenteado:** tabela `presentes_casamento`, coluna `pagou`.
+  Ela marca que **ao menos uma** pessoa deu aquele presente — o mesmo presente
+  pode ser dado por várias, então `pagou` não é uma contagem.
+- **Desfazer uma marcação feita por engano:** mudar `pagou` para `false`. O site
+  não consegue fazer isso — só vocês.
 
 ## Mudar presentes, preços ou links
 
@@ -79,14 +82,14 @@ link novo, atualizar os dois; há um teste que falha se divergirem.
 
 ## Testes
 
-    python -m unittest discover -s tests    # gerador de seed (13 testes)
+    python -m unittest discover -s tests    # gerador de seed (14 testes)
     node --test                             # helpers do site (21 testes)
 
 Rodar os dois a partir da raiz do projeto. `node --test` sem argumento descobre
 os arquivos sozinho; passar `tests/` quebra no Git Bash do Windows, que converte
 o caminho antes de o Node vê-lo.
 
-Para a verificação de ponta a ponta no navegador (39 checagens: renderização,
+Para a verificação de ponta a ponta no navegador (43 checagens: renderização,
 os 3 passos do pagamento, valor livre, paleta, enquadramento da foto):
 
     python -m http.server 8765

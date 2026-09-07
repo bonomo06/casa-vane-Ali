@@ -20,8 +20,8 @@ class TestEscapeSql(unittest.TestCase):
 
 
 class TestPresentes(unittest.TestCase):
-    def test_sao_quinze(self):
-        self.assertEqual(len(gerar_seed.PRESENTES), 15)
+    def test_sao_dezesseis(self):
+        self.assertEqual(len(gerar_seed.PRESENTES), 16)
 
     def test_todo_presente_tem_link(self):
         sem_link = [p["nome"] for p in gerar_seed.PRESENTES if not p.get("link_pagamento")]
@@ -32,6 +32,8 @@ class TestPresentes(unittest.TestCase):
         self.assertEqual(por_nome["Brincos da noiva"], 150)
         self.assertEqual(por_nome["Redes de proteção"], 200)
         self.assertEqual(por_nome["Preferência na fila do bar"], 1000)
+        self.assertEqual(por_nome["Escolher uma música no repertório da banda"], 1200)
+        self.assertEqual(por_nome["Jantar no apê"], 1500)
 
     def test_link_corresponde_ao_preco(self):
         for p in gerar_seed.PRESENTES:
@@ -39,6 +41,12 @@ class TestPresentes(unittest.TestCase):
                 p["link_pagamento"], gerar_seed.LINKS[p["preco"]],
                 f"{p['nome']}: link nao corresponde ao preco {p['preco']}",
             )
+
+    def test_nomes_unicos(self):
+        # O cartao e identificado por indice, mas nome repetido confundiria os
+        # noivos ao olhar a tabela para saber o que ja foi dado.
+        nomes = [p["nome"] for p in gerar_seed.PRESENTES]
+        self.assertEqual(len(nomes), len(set(nomes)))
 
     def test_categorias_validas(self):
         for p in gerar_seed.PRESENTES:
@@ -71,11 +79,11 @@ class TestGeracao(unittest.TestCase):
         for caminho in ("sql/03_seed_presentes.sql", "js/presentes-fallback.js"):
             self.assertTrue((RAIZ / caminho).exists(), caminho)
 
-    def test_sql_de_presentes_traz_os_15_nomes(self):
+    def test_sql_de_presentes_traz_todos_os_nomes(self):
         texto = (RAIZ / "sql" / "03_seed_presentes.sql").read_text(encoding="utf-8")
         for p in gerar_seed.PRESENTES:
             self.assertIn(gerar_seed.sql_txt(p["nome"]), texto, p["nome"])
-        self.assertEqual(texto.count("https://mpago.la/"), 15)
+        self.assertEqual(texto.count("https://mpago.la/"), 16)
 
     def test_apostrofo_escapado_no_sql_gerado(self):
         # A descricao do ensaio fotografico tem "antes do 'sim'". Sem escape o

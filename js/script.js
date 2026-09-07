@@ -86,8 +86,9 @@ function renderizarPresentes(categoria = 'todos') {
         ? estadoPresentes.slice()
         : estadoPresentes.filter(p => p.categoria === categoria);
 
-    // Já presenteados vão para o fim: ver que um presente caro já foi dado é
-    // informação útil, mas não deve competir com o que ainda está disponível.
+    // Quem já recebeu contribuição vai para o fim — não por estar indisponível
+    // (qualquer presente pode ser dado por várias pessoas), mas para espalhar as
+    // escolhas: quem chega depois vê primeiro o que ninguém pegou ainda.
     filtrados.sort((a, b) => (a.pagou === b.pagou) ? 0 : (a.pagou ? 1 : -1));
 
     // Só cai aqui numa categoria sem itens, já que a lista completa nunca fica
@@ -106,13 +107,13 @@ function renderizarPresentes(categoria = 'todos') {
             <p class="gift-desc">${escaparHtml(p.descricao || '')}</p>
             <div class="gift-price">${WeddingHelpers.formatarBRL(p.preco)}</div>
             <div class="gift-divider"></div>
-            <button class="present-btn" data-chave="${p.chave}" ${p.pagou ? 'disabled' : ''}>
-                ${p.pagou ? 'Já foi presenteado' : 'Quero presentear'}
+            <button class="present-btn" data-chave="${p.chave}">
+                ${p.pagou ? 'Presentear também' : 'Quero presentear'}
             </button>
         </div>
     `).join('');
 
-    giftsGrid.querySelectorAll('.present-btn:not([disabled])').forEach(btn => {
+    giftsGrid.querySelectorAll('.present-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const presente = estadoPresentes.find(p => p.chave === btn.dataset.chave);
             if (!presente) return;
@@ -132,14 +133,13 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     });
 });
 
-// ========== MODAL DE PAGAMENTO (3 passos) ==========
+// ========== MODAL DE PAGAMENTO (2 passos) ==========
 const modal = document.getElementById('giftModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalGiftName = document.getElementById('modalGiftName');
 const modalValor = document.getElementById('modalValor');
 const passo1 = document.getElementById('pagoStep1');
 const passo2 = document.getElementById('pagoStep2');
-const passo3 = document.getElementById('pagoStep3');
 const irPagamentoBtn = document.getElementById('irPagamentoBtn');
 const rsvpPromptModal = document.getElementById('rsvpPromptModal');
 
@@ -148,7 +148,6 @@ let presenteEmPagamento = null;
 function mostrarPasso(n) {
     passo1.style.display = n === 1 ? 'block' : 'none';
     passo2.style.display = n === 2 ? 'block' : 'none';
-    passo3.style.display = n === 3 ? 'block' : 'none';
 }
 
 // `presente` precisa de: nome, preco, link_pagamento, emoji. `id` é opcional —
@@ -159,8 +158,6 @@ function abrirModalPagamento(presente) {
     modalGiftName.textContent = presente.nome;
     modalValor.textContent = WeddingHelpers.formatarBRL(presente.preco);
     irPagamentoBtn.href = presente.link_pagamento || '#';
-    document.getElementById('avisoTextoPresente').textContent =
-        'Isso vai marcar "' + presente.nome + '" como presenteado e ele sai da lista para todos os outros convidados. Não dá para desfazer.';
     mostrarPasso(1);
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -172,8 +169,10 @@ function closeModal() {
     presenteEmPagamento = null;
 }
 
-// O passo 2 só aparece depois deste clique. Quem não abriu o link de pagamento
-// não tem como marcar o presente — é a única trava que o site verifica sozinho.
+// O passo 2 só aparece depois deste clique: quem não abriu o link de pagamento
+// não tem como registrar o presente. É a única trava que o site verifica
+// sozinho, e agora a única que existe — sem exclusividade, um clique a mais não
+// protegeria ninguém de nada.
 irPagamentoBtn.addEventListener('click', () => {
     // Sem id não há o que marcar no banco (caso do valor livre): fecha e agradece.
     if (!presenteEmPagamento || !presenteEmPagamento.id) {
@@ -190,9 +189,6 @@ document.getElementById('pagarDepoisBtn').addEventListener('click', () => {
     showToast('Sem pressa! O presente continua na lista.');
 });
 
-document.getElementById('jaPagueiBtn').addEventListener('click', () => mostrarPasso(3));
-document.getElementById('voltarPasso2Btn').addEventListener('click', () => mostrarPasso(2));
-
 document.getElementById('confirmarPagamentoBtn').addEventListener('click', async (e) => {
     if (!presenteEmPagamento || !presenteEmPagamento.id) return closeModal();
     const botao = e.currentTarget;
@@ -201,7 +197,7 @@ document.getElementById('confirmarPagamentoBtn').addEventListener('click', async
 
     const ok = await WeddingDB.marcarPresentePago(presenteEmPagamento.id);
     botao.disabled = false;
-    botao.textContent = 'Sim, tenho certeza — paguei';
+    botao.textContent = '✅ Já fiz o pagamento';
 
     if (!ok) {
         showToast('Não conseguimos registrar agora. O pagamento está feito — a gente marca na mão, pode deixar!');

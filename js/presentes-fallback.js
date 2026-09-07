@@ -149,9 +149,19 @@ window.PRESENTES_FALLBACK = [
     "emoji": "🎵",
     "nome": "Escolher uma música no repertório da banda",
     "categoria": "casal",
-    "preco": 1000,
+    "preco": 1200,
     "descricao": "Sua música favorita tocando ao vivo para agitar a pista!",
-    "link_pagamento": "https://mpago.la/21DHeUS",
+    "link_pagamento": "https://mpago.la/2qwk9Ht",
+    "pagou": false
+  },
+  {
+    "ordem": 16,
+    "emoji": "🍝",
+    "nome": "Jantar no apê",
+    "categoria": "casal",
+    "preco": 1500,
+    "descricao": "Vem jantar com a gente no apartamento novo: comida boa, vinho e conversa até tarde.",
+    "link_pagamento": "https://mpago.la/1r2Wf66",
     "pagou": false
   }
 ];
