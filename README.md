@@ -86,7 +86,7 @@ Rodar os dois a partir da raiz do projeto. `node --test` sem argumento descobre
 os arquivos sozinho; passar `tests/` quebra no Git Bash do Windows, que converte
 o caminho antes de o Node vê-lo.
 
-Para a verificação de ponta a ponta no navegador (34 checagens: renderização,
+Para a verificação de ponta a ponta no navegador (39 checagens: renderização,
 os 3 passos do pagamento, valor livre, paleta, enquadramento da foto):
 
     python -m http.server 8765

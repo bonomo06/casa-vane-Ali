@@ -6,7 +6,7 @@
 
     // ⚠️ PREENCHER depois de publicar apps-script/Codigo.gs.
     // Formato: https://script.google.com/macros/s/AKfycb.../exec
-    var URL_APPS_SCRIPT = '';
+    var URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxCZ5VekyIl5FLacS1MSB_pv80B_5yEzQE_gXEid5Ob7g4ENbMWm-UHmiNfbBh235DC/exec';
 
     var MENSAGENS = {
         'vazia':
