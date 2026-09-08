@@ -80,6 +80,37 @@ Os links do Mercado Pago aparecem em dois lugares — `scripts/gerar_seed.py` e
 `js/helpers.js` — porque o valor livre precisa deles no browser. Ao adicionar um
 link novo, atualizar os dois; há um teste que falha se divergirem.
 
+## Tipografia e ornamentos florais
+
+**A fonte do site é a The Seasons** (a mesma do Canva), auto-hospedada em
+`fonts/theseasons.woff2`. Ela vale para o site inteiro **menos os parágrafos da
+história**, em `.sobre-nos p` (Cormorant Garamond) e `.sobre-nos .sobre-remate`
+(Great Vibes) — foi pedido assim. É o único motivo pelo qual o site ainda
+carrega Google Fonts.
+
+Duas coisas para saber antes de mexer nela:
+
+- **Só existe um peso com acentuação completa.** As versões Light/Regular/itálico
+  que circulam livremente são demos de 96 glifos, sem `ã ç é ô`. Em português
+  isso quebra o site. O `@font-face` declara `font-weight: 100 900` de propósito:
+  o mesmo arquivo atende qualquer peso e o navegador nunca aplica negrito
+  sintético. A hierarquia é feita por tamanho e cor, não por peso.
+- **É licenciada como gratuita para uso pessoal.** Serve para o site do
+  casamento. Para uso comercial, a licença sai com a My Creative Land.
+
+Os ornamentos em `img/ornamentos/` são recortes de `img/Caderno de votos.png` e
+`img/Save the date (1).png`, que ficam guardados como material de origem e não
+são carregados pelo site. Os dois vinham como página A4 inteira — o "Caderno de
+votos" trazia a mesma moldura duplicada lado a lado, com 2px de emenda no meio.
+Cada peça é usada colada na aresta do container, porque o corte reto da arte foi
+desenhado para sangrar na borda da página. Esticar a moldura inteira distorceria
+as peônias; por isso são peças soltas e não uma imagem só.
+
+Onde entram: o par de cantos no topo do hero e a moldura da "página do caderno de
+votos" em volta da história. O padding vertical de `.sobre-nos` é dimensionado
+para caber a arte — ao mudar o tamanho de um, mudar o do outro, senão o texto
+volta a cair por cima da folhagem.
+
 ## Testes
 
     python -m unittest discover -s tests    # gerador de seed (14 testes)

@@ -1,3 +1,18 @@
+/* ---------- THE SEASONS (fonte do Canva, auto-hospedada) ---------- */
+/* Uma única variante existe com acentuação completa (a Bold do arquivo
+   original). Declaramos o intervalo 100-900 de propósito: assim o navegador
+   usa este mesmo arquivo para qualquer font-weight e nunca aplica negrito
+   sintético, que destrói o contraste fino desta serifada. A hierarquia do site
+   passa a ser feita por tamanho, cor e tracking — não por peso. */
+@font-face {
+    font-family: 'The Seasons';
+    src: url('../fonts/theseasons.woff2') format('woff2'),
+         url('../fonts/theseasons.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --forest: #3E5732;
     --forest-light: #6E8759;
@@ -12,6 +27,9 @@
     --ink-soft: rgba(30, 30, 28, 0.7);
     --white: #FFFFFF;
     --radius: 16px;
+    /* Cormorant/Georgia como fallback: são serifadas de contraste parecido,
+       então o layout não salta enquanto a webfont carrega. */
+    --font-seasons: 'The Seasons', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
 }
 
 * {
@@ -27,14 +45,14 @@ html {
 body {
     background: var(--sand);
     color: var(--ink);
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     overflow-x: hidden;
     font-size: 16px;
     line-height: 1.6;
 }
 
 .mono {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     letter-spacing: 0.02em;
 }
 
@@ -115,6 +133,12 @@ nav ul li a:hover {
 .std-editorial-hero {
     position: relative;
     width: 100%;
+    /* A regra genérica `section` limita tudo a 1200px centralizados. Para as
+       demais seções isso está certo, mas o hero é de largura total (100vh, mesmo
+       fundo do body) — preso em 1200px, o `overflow: hidden` cortava os
+       ornamentos florais no meio da tela em vez de na aresta. O conteúdo
+       continua centralizado por .std-container, que tem o seu próprio 1200px. */
+    max-width: none;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -167,7 +191,7 @@ nav ul li a:hover {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.75rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -180,7 +204,7 @@ nav ul li a:hover {
 }
 
 .std-title-names {
-    font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+    font-family: var(--font-seasons);
     font-weight: 400;
     font-size: clamp(3.6rem, 7.5vw, 5.8rem);
     line-height: 1.05;
@@ -190,7 +214,7 @@ nav ul li a:hover {
 }
 
 .std-title-names .amp {
-    font-family: 'Great Vibes', 'Cormorant Garamond', cursive;
+    font-family: var(--font-seasons);
     font-size: 1.25em;
     color: var(--rose);
     font-weight: 300;
@@ -198,7 +222,7 @@ nav ul li a:hover {
 }
 
 .std-subtitle-date {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-seasons);
     font-weight: 500;
     font-size: clamp(1.1rem, 2.2vw, 1.4rem);
     color: var(--ink);
@@ -210,7 +234,7 @@ nav ul li a:hover {
 }
 
 .std-time-tag {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-seasons);
     font-weight: 500;
     font-size: clamp(0.95rem, 1.8vw, 1.15rem);
     color: var(--forest);
@@ -225,7 +249,7 @@ nav ul li a:hover {
 .std-location-tag {
     font-size: 0.88rem;
     color: var(--ink-soft);
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-seasons);
     letter-spacing: 0.06em;
     margin-bottom: 20px;
 }
@@ -279,7 +303,7 @@ nav ul li a:hover {
 }
 
 .cd-num {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: clamp(1.3rem, 2.8vw, 1.7rem);
     font-weight: 700;
     color: var(--forest);
@@ -348,7 +372,7 @@ nav ul li a:hover {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     color: #FFFFFF;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.75rem;
     padding: 5px 14px;
     border-radius: 999px;
@@ -485,7 +509,7 @@ nav ul li a:hover {
 }
 
 .address-badge {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -591,7 +615,7 @@ nav ul li a:hover {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.72rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -657,7 +681,7 @@ nav ul li a:hover {
 
 /* ---------- BUTTONS ---------- */
 .btn {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     font-weight: 700;
     font-size: 0.92rem;
     padding: 13px 24px;
@@ -745,7 +769,7 @@ section {
 }
 
 .progress-section .goal-text {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.78rem;
     opacity: 0.75;
     margin-bottom: 16px;
@@ -771,7 +795,7 @@ section {
 .progress-numbers {
     display: flex;
     justify-content: space-between;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.78rem;
     opacity: 0.8;
 }
@@ -786,7 +810,7 @@ section {
 }
 
 .tab-btn {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     font-size: 0.85rem;
     font-weight: 600;
     padding: 9px 20px;
@@ -842,7 +866,7 @@ section {
 .gift-card .gift-tag {
     display: inline-flex;
     align-self: flex-start;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.65rem;
     font-weight: 700;
     padding: 3px 10px;
@@ -883,7 +907,7 @@ section {
 }
 
 .gift-card .gift-price {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--forest);
@@ -901,7 +925,7 @@ section {
 
 .gift-card .present-btn {
     width: 100%;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     font-size: 0.82rem;
     font-weight: 700;
     padding: 11px;
@@ -946,14 +970,23 @@ section {
     transform: translateY(-4px);
 }
 
+/* Verde e rosa saem dos tokens da paleta (--forest-pale e --rose-pale) em vez
+   de cores próprias: são as mesmas duas famílias das folhas e das peônias da
+   moldura floral, então as fichas das meninas passam a ler como parte do site.
+   A borda é o token forte a 15%.
+
+   Os dois gradientes não são simétricos de propósito. O tom médio do verde fica
+   a ΔE 7 do fundo (--sand); com --rose-pale nas duas pontas o rosa ficava a ΔE 6
+   e, por ter menos croma contra um creme quente, parecia lavado ao lado do
+   verde. #FBE3EC leva o rosa a ΔE 9, que é onde os dois pesam igual aos olhos. */
 .pet-card.dora-card {
-    background: linear-gradient(145deg, #FFF8E7, #FFEACC);
-    border: 2px solid rgba(212, 137, 10, 0.15);
+    background: linear-gradient(145deg, #F1F6EA, var(--forest-pale));
+    border: 2px solid rgba(62, 87, 50, 0.15);
 }
 
 .pet-card.agata-card {
-    background: linear-gradient(145deg, #F0ECFF, #E4DFFF);
-    border: 2px solid rgba(107, 92, 165, 0.15);
+    background: linear-gradient(145deg, var(--rose-pale), #FBE3EC);
+    border: 2px solid rgba(199, 54, 95, 0.15);
 }
 
 .pet-card img {
@@ -1020,7 +1053,7 @@ section {
 }
 
 .free-amount input {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 1.2rem;
     font-weight: 700;
     width: 160px;
@@ -1052,7 +1085,7 @@ section {
 .recado-box textarea,
 .recado-box input[type="text"] {
     width: 100%;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     border: 1.5px solid rgba(30, 30, 28, 0.15);
     border-radius: 12px;
     padding: 12px 14px;
@@ -1102,7 +1135,7 @@ section {
 .rsvp-box input[type="number"],
 .rsvp-box textarea {
     width: 100%;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     border: 1.5px solid rgba(30, 30, 28, 0.15);
     border-radius: 12px;
     padding: 12px 14px;
@@ -1151,7 +1184,7 @@ section {
 /* ---------- RSVP SEARCH MODAL STYLES ---------- */
 .search-box input {
     width: 100%;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     font-size: 1rem;
     padding: 12px 16px;
     border: 2px solid var(--forest-light);
@@ -1283,7 +1316,7 @@ footer .pets-footer {
 }
 
 .modal-box .pix-key-box {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 0.82rem;
     background: var(--sand);
     border: 1.5px dashed var(--forest-light);
@@ -1296,7 +1329,7 @@ footer .pets-footer {
 }
 
 .modal-box .modal-valor {
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-seasons);
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--rose);
@@ -1310,7 +1343,7 @@ footer .pets-footer {
 }
 
 .modal-box .btn-close {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-seasons);
     font-size: 0.85rem;
     font-weight: 600;
     padding: 10px;
@@ -1461,4 +1494,152 @@ footer .pets-footer {
    capturas headless de 66%, 72%, 78% e 85%. */
 .photo-slide img[src*="vane-ali7"] {
     object-position: 78% center;
+}
+
+/* ---------- AJUSTES PARA A THE SEASONS ---------- */
+/* Serifada de alto contraste: as hastes finas somem em corpo pequeno. Um pouco
+   de tracking e de entrelinha devolve a legibilidade sem mexer nos tamanhos que
+   já estavam calibrados no layout. */
+body {
+    letter-spacing: 0.01em;
+    line-height: 1.65;
+}
+
+.section-head h2,
+.std-title-names {
+    letter-spacing: 0.005em;
+}
+
+/* Textos-etiqueta em caixa alta: a fonte é larga, então o tracking original
+   (0.1em+) empurrava as pílulas para fora do lugar. */
+.std-badge-pill,
+.address-badge,
+.hero-badge,
+.gift-card .gift-tag,
+.countdown-label,
+.cd-txt {
+    letter-spacing: 0.05em;
+}
+
+/* Os algarismos da The Seasons são proporcionais (o "1" tem menos da metade da
+   largura do "0") e a fonte não traz a feature `tnum`. Sem largura fixa, o
+   contador tremia a cada segundo. */
+.cd-num {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- ORNAMENTOS FLORAIS ---------- */
+/* Recortados de `img/Caderno de votos.png` e `img/Save the date (1).png`, que
+   vinham como página A4 inteira (o primeiro trazia a mesma moldura duplicada
+   lado a lado). Cada peça é usada colada na borda do container: o corte reto da
+   arte cai exatamente na aresta e lê como sangria, do jeito que foi desenhada.
+   Esticar a moldura inteira distorceria as peônias, por isso são peças soltas. */
+.std-editorial-hero::before,
+.std-editorial-hero::after,
+.sobre-nos::before,
+.sobre-nos::after {
+    content: '';
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    pointer-events: none;
+}
+
+/* HERO — o par de cantos do "Save the date" */
+/* Colados na aresta do hero: o corte reto da arte morre fora da tela e lê como
+   sangria, que é como a moldura foi desenhada. */
+.std-editorial-hero::before,
+.std-editorial-hero::after {
+    top: 0;
+    z-index: 1;
+}
+
+.std-editorial-hero::before {
+    left: 0;
+    width: clamp(120px, 21vw, 290px);
+    aspect-ratio: 533 / 730;
+    background-image: url('../img/ornamentos/floral-esq.png');
+    background-image: image-set(url('../img/ornamentos/floral-esq.webp') type('image/webp'),
+            url('../img/ornamentos/floral-esq.png') type('image/png'));
+}
+
+.std-editorial-hero::after {
+    right: 0;
+    width: clamp(110px, 19vw, 265px);
+    aspect-ratio: 448 / 412;
+    background-image: url('../img/ornamentos/floral-dir.png');
+    background-image: image-set(url('../img/ornamentos/floral-dir.webp') type('image/webp'),
+            url('../img/ornamentos/floral-dir.png') type('image/png'));
+}
+
+/* Até 900px o hero vira uma coluna e o título sobe para o topo, onde antes só
+   cabiam as flores. Aqui elas descem para baixo da nav fixa (senão viram um
+   borrão atrás do vidro) e o hero ganha uma faixa própria no topo para elas.
+   O padding-top acompanha a mesma medida da arte — `min()` nos dois — de modo
+   que a folhagem nunca alcance a linha do "Vane & Ali", em qualquer largura. */
+@media (max-width: 900px) {
+
+    .std-editorial-hero {
+        padding-top: calc(80px + min(41.1vw, 205px));
+    }
+
+    .std-editorial-hero::before,
+    .std-editorial-hero::after {
+        top: 64px;
+        opacity: 0.85;
+    }
+
+    .std-editorial-hero::before {
+        width: min(30vw, 150px);
+    }
+
+    .std-editorial-hero::after {
+        width: min(27vw, 138px);
+    }
+}
+
+/* SOBRE NÓS — a página do caderno de votos */
+.sobre-nos {
+    position: relative;
+    overflow: hidden;
+    background: var(--white);
+    border: 1.5px solid rgba(30, 30, 28, 0.07);
+    border-radius: 22px;
+    box-shadow: 0 18px 44px rgba(30, 30, 28, 0.05);
+    /* O padding vertical é dimensionado para caber a moldura: como o texto é
+       centralizado e ocupa quase toda a largura do cartão, qualquer canto
+       floral cruzaria as linhas se elas subissem. É o espaço que faz o bloco
+       ler como página de convite em vez de texto por cima de flor. */
+    padding: clamp(112px, 17vw, 158px) clamp(26px, 6vw, 68px) clamp(122px, 18vw, 164px);
+}
+
+/* A moldura ocupa os cantos; o texto tem de passar por cima dela. */
+.sobre-nos>* {
+    position: relative;
+    z-index: 1;
+}
+
+.sobre-nos::before {
+    top: 0;
+    left: 0;
+    width: clamp(80px, 13vw, 108px);
+    aspect-ratio: 533 / 730;
+    z-index: 0;
+    background-image: url('../img/ornamentos/floral-esq.png');
+    background-image: image-set(url('../img/ornamentos/floral-esq.webp') type('image/webp'),
+            url('../img/ornamentos/floral-esq.png') type('image/png'));
+}
+
+.sobre-nos::after {
+    bottom: 0;
+    right: 0;
+    width: clamp(180px, 40vw, 300px);
+    aspect-ratio: 897 / 445;
+    z-index: 0;
+    background-image: url('../img/ornamentos/floral-base.png');
+    background-image: image-set(url('../img/ornamentos/floral-base.webp') type('image/webp'),
+            url('../img/ornamentos/floral-base.png') type('image/png'));
 }
