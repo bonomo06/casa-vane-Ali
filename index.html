@@ -7,8 +7,8 @@
     <title>Vanessa & Ali - Lista de Presentes de Casamento</title>
     <meta name="description"
         content="Ajude Vanessa e Ali a terminarem de pagar o lar dos sonhos (e mimar Dora e Ágata). Lista de presentes de casamento com presentes criativos para o casal e suas fuilhas.">
-    <link rel="icon" type="image/png" href="img/hero.png">
-    <link rel="apple-touch-icon" href="img/hero.png">
+    <link rel="icon" type="image/png" href="img/vane-ali9.png">
+    <link rel="apple-touch-icon" href="img/vane-ali9.png">
     <!-- A The Seasons é auto-hospedada e agora carrega o site inteiro, por isso
          vem no preload. O Google Fonts só serve as duas fontes que sobraram na
          seção "Sobre nós" (e a Cormorant, que é o fallback da The Seasons). -->
@@ -298,6 +298,24 @@
                     Abrimos o pagamento em outra aba 👉<br>
                     Quando terminar, volta aqui pra gente saber que esse presente veio de você.
                 </p>
+
+                <!-- Só aparece nos três presentes que dão algo em troca (jantar
+                     no apê, escolher a música, preferência no bar). O JS liga o
+                     bloco e o campo da música conforme o presente. -->
+                <div id="perkForm" class="perk-form" style="display:none;">
+                    <p class="perk-aviso" id="perkAviso"></p>
+                    <label class="perk-label" for="perkNome">Seu nome</label>
+                    <input type="text" id="perkNome" placeholder="Nome e sobrenome" autocomplete="name">
+                    <label class="perk-label" for="perkTelefone">WhatsApp com DDD</label>
+                    <input type="tel" id="perkTelefone" placeholder="(11) 91234-5678" autocomplete="tel"
+                        inputmode="tel">
+                    <div id="perkMusicaWrap" style="display:none;">
+                        <label class="perk-label" for="perkMusica">Qual música?</label>
+                        <input type="text" id="perkMusica" placeholder="Música e artista">
+                    </div>
+                    <p class="perk-erro" id="perkErro" role="alert"></p>
+                </div>
+
                 <div class="modal-actions">
                     <button class="btn btn-primary" id="confirmarPagamentoBtn">✅ Já fiz o pagamento</button>
                     <button class="btn-close" id="pagarDepoisBtn">Ainda não / vou fazer depois</button>
@@ -381,6 +399,7 @@
     <script src="js/helpers.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/sheets-client.js"></script>
+    <script src="js/webhook-client.js"></script>
     <script src="js/script.js"></script>
 </body>
 

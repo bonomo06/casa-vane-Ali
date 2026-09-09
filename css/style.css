@@ -1465,28 +1465,6 @@ footer .pets-footer {
     }
 }
 
-/* ---------- PRESENTE JÁ DADO ---------- */
-/* Sem opacidade nem grayscale de propósito: o presente continua disponível para
-   quem quiser contribuir também, e apagá-lo visualmente diria o contrário. O
-   selo informa; não desabilita. */
-.gift-card.presenteado {
-    position: relative;
-    border-color: var(--forest-light);
-}
-
-.gift-badge-dado {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--forest);
-    color: var(--white);
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 999px;
-    letter-spacing: 0.02em;
-}
-
 /* ---------- ENQUADRAMENTO DA FOTO 7 ---------- */
 /* O casal está à direita do centro nesta foto. Como a moldura é retrato e usa
    object-fit: cover, o object-position: center padrão corta para o lado errado
@@ -1642,4 +1620,60 @@ body {
     background-image: url('../img/ornamentos/floral-base.png');
     background-image: image-set(url('../img/ornamentos/floral-base.webp') type('image/webp'),
             url('../img/ornamentos/floral-base.png') type('image/png'));
+}
+
+/* ---------- FORMULÁRIO DOS PRESENTES COM CONTRAPARTIDA ---------- */
+/* Aparece no passo 2 do modal apenas nos três perks (jantar no apê, música na
+   banda, preferência no bar), onde os noivos precisam do contato de quem deu. */
+.perk-form {
+    text-align: left;
+    background: var(--sand);
+    border: 1.5px solid rgba(62, 87, 50, 0.14);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.perk-aviso {
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--forest);
+    margin-bottom: 14px;
+}
+
+.perk-label {
+    display: block;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+}
+
+.perk-form input {
+    width: 100%;
+    font-family: var(--font-seasons);
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--white);
+    border: 1.5px solid rgba(30, 30, 28, 0.15);
+    border-radius: 12px;
+    padding: 11px 13px;
+    margin-bottom: 12px;
+}
+
+.perk-form input:focus {
+    outline: none;
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(199, 54, 95, 0.12);
+}
+
+/* Sem `display: none` quando vazio: o vão reservado evita que os botões pulem
+   para baixo na primeira vez que aparece um erro. */
+.perk-erro {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--rose);
+    min-height: 1.15em;
+    margin-bottom: 0;
 }

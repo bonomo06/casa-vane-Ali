@@ -115,37 +115,112 @@ document.getElementById('f').addEventListener('load', async () => {
         ok(true, 'banco em sincronia com a lista de origem (' + cartoes + ' presentes)');
     }
 
-    // --- presente que ja recebeu contribuicao continua disponivel ---
-    // Sem acesso ao estado interno (declarado com let, fora de window), o teste
-    // recria o cartao pela mesma funcao de render que o site usa.
+    // --- nenhum cartao revela quem ja foi presenteado ---
+    // O site parou de mostrar isso: os noivos consultam a coluna `pagou` no
+    // Supabase, o convidado nao ve nada. Estas checagens existem para o selo
+    // nao voltar por acidente junto com algum refactor do render.
     const qualquer = esperados[0];
     w.renderizarPresentes('todos');
     await esperar(150);
-    const jaDados = d.querySelectorAll('.gift-card.presenteado');
-    if (!jaDados.length) {
-        linhas.push('PULADO  nenhum presente marcado como pago no banco — o estado ' +
-                    '"ja presenteado" nao pode ser conferido nos cartoes reais');
-    } else {
-        const cartaoDado = jaDados[0];
-        ok(!!cartaoDado.querySelector('.gift-badge-dado'), 'mostra o selo de ja presenteado');
-        const btnDado = cartaoDado.querySelector('.present-btn');
-        ok(!btnDado.disabled, 'presente ja dado CONTINUA clicavel (mais de uma pessoa pode dar)');
-        ok(btnDado.textContent.indexOf('Presentear tamb') !== -1, 'botao convida a presentear tambem');
-        const estilo = w.getComputedStyle(cartaoDado);
-        ok(estilo.filter === 'none' && parseFloat(estilo.opacity) > 0.9,
-           'cartao nao fica apagado, porque nao esta indisponivel');
-        btnDado.click();
-        await esperar(300);
-        ok(modalAberto(), 'clicar num presente ja dado abre o modal normalmente');
-        d.querySelector('#closeModalBtn').click();
-        await esperar(200);
-    }
+    ok(d.querySelectorAll('.gift-card.presenteado').length === 0,
+       'nenhum cartao recebe a classe de "ja presenteado"');
+    ok(d.querySelectorAll('.gift-badge-dado').length === 0,
+       'o selo de "ja presenteado" nao existe mais em cartao nenhum');
+    const textosBotoes = Array.prototype.map.call(
+        d.querySelectorAll('.present-btn'), b => b.textContent.trim());
+    ok(textosBotoes.every(t => t === 'Quero presentear'),
+       'todo botao diz "Quero presentear", sem variante para presente ja dado');
 
-    // Nenhum cartao pode vir desabilitado, dado ou nao.
+    // A ordem tem de ser a da lista de origem: nada reordena por `pagou`.
+    const nomesNaTela = Array.prototype.map.call(
+        d.querySelectorAll('.gift-card .gift-title'), e => e.textContent.trim());
+    ok(nomesNaTela.length === esperados.length &&
+       nomesNaTela.every((n, i) => n === esperados[i].nome),
+       'cartoes saem na ordem da lista de origem, sem empurrar os pagos para o fim');
+
+    // Nenhum cartao pode vir desabilitado.
     const desabilitados = Array.prototype.filter.call(
         d.querySelectorAll('.present-btn'), b => b.disabled).length;
     ok(desabilitados === 0, 'nenhum botao de presentear esta desabilitado (' + desabilitados + ')');
     ok(qualquer && qualquer.pagou === false, 'a lista de origem nasce toda com pagou = false');
+
+    // --- os tres presentes com contrapartida pedem contato ---
+    // Sem enviar nada para o n8n: o teste para no passo de validacao, que
+    // acontece antes do fetch.
+    const PERKS_ESPERADOS = [
+        ['Jantar no apê', 'ape', false],
+        ['Escolher uma música no repertório da banda', 'musica', true],
+        ['Preferência na fila do bar', 'bar', false]
+    ];
+    for (const [nome, tipo, pedeMusica] of PERKS_ESPERADOS) {
+        const perk = w.WeddingHelpers.perkDoPresente(nome);
+        ok(perk && perk.tipo === tipo, '"' + nome + '" e reconhecido como perk do tipo ' + tipo);
+        ok(perk && perk.pedeMusica === pedeMusica,
+           '"' + nome + '" ' + (pedeMusica ? 'pede' : 'nao pede') + ' o campo de musica');
+        ok(!!esperados.find(p => p.nome === nome),
+           '"' + nome + '" existe na lista de origem (nome que liga o perk ao presente)');
+    }
+    ok(w.WeddingHelpers.perkDoPresente('Cota do sofá') === null,
+       'presente comum nao e tratado como perk');
+
+    // Abre um perk e confere que o formulario aparece no passo 2.
+    const cartaoMusica = Array.prototype.find.call(
+        d.querySelectorAll('.gift-card'),
+        c => c.querySelector('.gift-title').textContent.indexOf('Escolher uma m') !== -1);
+    if (!cartaoMusica) {
+        linhas.push('PULADO  cartao "Escolher uma musica" nao esta na tela');
+    } else {
+        cartaoMusica.querySelector('.present-btn').click();
+        await esperar(300);
+        ok(d.querySelector('#perkForm').style.display === 'block',
+           'o formulario de contato aparece no presente da musica');
+        ok(d.querySelector('#perkMusicaWrap').style.display === 'block',
+           'o campo "qual musica" aparece so nesse presente');
+        d.querySelector('#irPagamentoBtn').click();
+        await esperar(800);
+        ok(d.querySelector('#pagoStep2').style.display === 'block',
+           'o passo 2 abre para o perk (mesmo sem banco, o webhook nao depende dele)');
+
+        // Nome vazio: precisa reclamar e NAO fechar o modal.
+        d.querySelector('#perkNome').value = '';
+        d.querySelector('#confirmarPagamentoBtn').click();
+        await esperar(200);
+        ok(d.querySelector('#perkErro').textContent.length > 0, 'sem nome, mostra erro');
+        ok(modalAberto(), 'sem nome, o modal continua aberto');
+
+        // Telefone invalido: mesma coisa.
+        d.querySelector('#perkNome').value = 'Convidado de Teste';
+        d.querySelector('#perkTelefone').value = '123';
+        d.querySelector('#confirmarPagamentoBtn').click();
+        await esperar(200);
+        ok(d.querySelector('#perkErro').textContent.indexOf('DDD') !== -1,
+           'telefone curto reclama do DDD');
+        ok(modalAberto(), 'telefone invalido nao fecha o modal');
+
+        // Musica vazia, com nome e telefone certos.
+        d.querySelector('#perkTelefone').value = '(11) 91234-5678';
+        d.querySelector('#perkMusica').value = '';
+        d.querySelector('#confirmarPagamentoBtn').click();
+        await esperar(200);
+        ok(d.querySelector('#perkErro').textContent.toLowerCase().indexOf('m') !== -1 &&
+           modalAberto(), 'sem a musica, reclama e nao envia');
+
+        d.querySelector('#pagarDepoisBtn').click();
+        await esperar(300);
+    }
+
+    // Presente comum nao mostra o formulario.
+    const cartaoComum = Array.prototype.find.call(
+        d.querySelectorAll('.gift-card'),
+        c => c.querySelector('.gift-title').textContent.indexOf('Cota do sof') !== -1);
+    if (cartaoComum) {
+        cartaoComum.querySelector('.present-btn').click();
+        await esperar(300);
+        ok(d.querySelector('#perkForm').style.display === 'none',
+           'presente comum nao pede contato nenhum');
+        d.querySelector('#closeModalBtn').click();
+        await esperar(200);
+    }
 
     // --- valor livre ---
     const campo = d.querySelector('#freeValue');

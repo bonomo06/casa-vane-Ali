@@ -1,6 +1,7 @@
 import re
 import subprocess
 import sys
+import unicodedata
 import unittest
 from pathlib import Path
 
@@ -65,6 +66,33 @@ class TestSincroniaComOJs(unittest.TestCase):
             for m in re.finditer(r"(\d+):\s*'([^']+)'", trecho)
         }
         self.assertEqual(do_js, gerar_seed.LINKS)
+
+    def test_nomes_dos_perks_existem_na_lista_de_presentes(self):
+        """Os tres presentes com contrapartida sao reconhecidos pelo NOME, porque
+        a tabela do Supabase nao tem coluna de tipo. Renomear um deles em
+        gerar_seed.py sem mexer no PERKS de js/helpers.js faria o site parar de
+        pedir o contato em silencio — o convidado pagaria e ninguem saberia
+        que musica ele quer. Este teste e o alarme."""
+
+        def normalizar(texto):
+            sem_acento = unicodedata.normalize("NFD", texto)
+            sem_acento = "".join(c for c in sem_acento if not unicodedata.combining(c))
+            return re.sub(r"\s+", " ", sem_acento).lower().strip()
+
+        js = (RAIZ / "js" / "helpers.js").read_text(encoding="utf-8")
+        trecho = js.split("var PERKS = {")[1].split("\n    };")[0]
+        chaves_do_js = set(re.findall(r"^\s*'([^']+)':\s*\{", trecho, re.MULTILINE))
+
+        self.assertEqual(len(chaves_do_js), 3, "esperado exatamente 3 perks")
+
+        nomes_normalizados = {normalizar(p["nome"]) for p in gerar_seed.PRESENTES}
+        faltando = chaves_do_js - nomes_normalizados
+        self.assertEqual(
+            faltando,
+            set(),
+            "estes perks de js/helpers.js nao batem com nenhum presente de "
+            "gerar_seed.py: " + repr(sorted(faltando)),
+        )
 
 
 class TestGeracao(unittest.TestCase):

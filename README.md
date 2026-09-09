@@ -10,6 +10,7 @@ a pasta para qualquer hospedagem de arquivos estáticos.
 | Lista de presentes, o que já foi dado | Supabase, tabela `presentes_casamento` |
 | Recados dos convidados | Supabase, tabela `recados` |
 | **Lista de convidados e confirmações** | **Planilha do Google, aba `Convidados`** |
+| Contato de quem deu jantar / música / bar | Fluxo do n8n (webhook), veja abaixo |
 
 ## Antes de publicar
 
@@ -61,6 +62,9 @@ no `apps-script/Codigo.gs`.
 - **Ver o que já foi presenteado:** tabela `presentes_casamento`, coluna `pagou`.
   Ela marca que **ao menos uma** pessoa deu aquele presente — o mesmo presente
   pode ser dado por várias, então `pagou` não é uma contagem.
+  **Isto é só para vocês:** o site não mostra mais nada disso ao convidado — nem
+  selo, nem ordem diferente. Quem entra vê os 16 presentes iguais, do primeiro ao
+  último dia.
 - **Desfazer uma marcação feita por engano:** mudar `pagou` para `false`. O site
   não consegue fazer isso — só vocês.
 
@@ -79,6 +83,52 @@ A lista de convidados **não** passa por aqui — ela vive só na planilha.
 Os links do Mercado Pago aparecem em dois lugares — `scripts/gerar_seed.py` e
 `js/helpers.js` — porque o valor livre precisa deles no browser. Ao adicionar um
 link novo, atualizar os dois; há um teste que falha se divergirem.
+
+## Os 3 presentes que dão algo em troca (jantar, música, bar)
+
+Três presentes têm contrapartida, e para entregá-la os noivos precisam saber
+quem deu. Depois de clicar em "Ir para o pagamento", esses três (e só esses)
+mostram um formulário antes do "Já fiz o pagamento":
+
+| Presente | `tipo` enviado | Campos pedidos |
+|---|---|---|
+| Jantar no apê | `ape` | nome, WhatsApp |
+| Escolher uma música no repertório da banda | `musica` | nome, WhatsApp, **música** |
+| Preferência na fila do bar | `bar` | nome, WhatsApp |
+
+Ao confirmar, o site faz um POST em JSON para o webhook do n8n configurado em
+`js/webhook-client.js`:
+
+```json
+{ "tipo": "musica", "presente": "Escolher uma música no repertório da banda",
+  "nome": "Fulana de Tal", "telefone": "11912345678",
+  "musica": "Evidências - Chitãozinho & Xororó",
+  "valor": 1200, "enviado_em": "2027-04-01T18:30:00.000Z" }
+```
+
+`telefone` vai só com dígitos. `musica` vem `null` nos outros dois tipos, em vez
+de sair do objeto, para o fluxo do n8n ver sempre a mesma forma.
+
+**Para trocar a URL do webhook:** só `js/webhook-client.js`. Ela não está em
+mais nenhum lugar.
+
+Três coisas que valem saber:
+
+- **A URL do webhook é pública.** Ela aparece no código-fonte do site, como
+  qualquer coisa no front-end. Dá para alguém disparar o fluxo com dados
+  inventados. Para o que ele faz hoje — avisar de um pedido de música e guardar
+  um contato — o pior caso é registro falso. Se algum dia esse webhook passar a
+  disparar cobrança ou algo irreversível, precisa de um intermediário.
+- **O reconhecimento é pelo NOME do presente**, porque a tabela do Supabase não
+  tem coluna de tipo. O mapa está em `PERKS`, em `js/helpers.js`. Renomear um
+  desses presentes em `scripts/gerar_seed.py` sem atualizar o mapa faria o site
+  parar de pedir o contato **em silêncio** — o convidado pagaria e ninguém
+  saberia que música ele quer. Existe um teste em `tests/test_gerar_seed.py` que
+  falha nesse caso; ele é o alarme.
+- **Se o webhook estiver fora**, o site não perde o presente: registra o
+  pagamento no Supabase de todo jeito e pede ao convidado que mande nome e
+  WhatsApp pelo WhatsApp. O envio ao n8n vem **antes** da marcação no banco de
+  propósito — a marcação vocês fazem na mão depois, o pedido de música não.
 
 ## Tipografia e ornamentos florais
 
@@ -120,8 +170,9 @@ Rodar os dois a partir da raiz do projeto. `node --test` sem argumento descobre
 os arquivos sozinho; passar `tests/` quebra no Git Bash do Windows, que converte
 o caminho antes de o Node vê-lo.
 
-Para a verificação de ponta a ponta no navegador (43 checagens: renderização,
-os 2 passos do pagamento, valor livre, paleta, enquadramento da foto):
+Para a verificação de ponta a ponta no navegador (67 checagens: renderização,
+os 2 passos do pagamento, formulário dos 3 presentes com contrapartida, valor
+livre, paleta, enquadramento da foto):
 
     python -m http.server 8765
 

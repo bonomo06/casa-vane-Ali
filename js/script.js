@@ -61,9 +61,11 @@ async function recarregarPresentes() {
     if (doBanco && doBanco.length) {
         estadoPresentes = doBanco;
     } else {
-        // Sem banco o site continua de pé; só não sabe o que já foi dado.
+        // Sem banco o site continua de pé: a lista aparece igual e o convidado
+        // consegue presentear. O que se perde é o registro de quem deu o quê,
+        // e isso é problema dos noivos depois — não do convidado agora, então
+        // não vale assustá-lo com um aviso.
         estadoPresentes = (window.PRESENTES_FALLBACK || []).map(p => Object.assign({}, p));
-        showToast('Não conseguimos conferir a lista agora. Os presentes estão aí, mas pode ser que algum já tenha sido dado.');
     }
 
     // `chave` identifica o cartão no DOM e existe sempre. `id` é o identificador
@@ -86,10 +88,10 @@ function renderizarPresentes(categoria = 'todos') {
         ? estadoPresentes.slice()
         : estadoPresentes.filter(p => p.categoria === categoria);
 
-    // Quem já recebeu contribuição vai para o fim — não por estar indisponível
-    // (qualquer presente pode ser dado por várias pessoas), mas para espalhar as
-    // escolhas: quem chega depois vê primeiro o que ninguém pegou ainda.
-    filtrados.sort((a, b) => (a.pagou === b.pagou) ? 0 : (a.pagou ? 1 : -1));
+    // A ordem é a que os noivos definiram em scripts/gerar_seed.py e nada aqui
+    // reordena: o site não mostra mais quais presentes já foram dados, então
+    // empurrar os contribuídos para o fim só embaralharia a lista sem explicar
+    // nada a quem está olhando.
 
     // Só cai aqui numa categoria sem itens, já que a lista completa nunca fica
     // vazia (recarregarPresentes garante o fallback).
@@ -99,8 +101,7 @@ function renderizarPresentes(categoria = 'todos') {
     }
 
     giftsGrid.innerHTML = filtrados.map((p, i) => `
-        <div class="gift-card${p.pagou ? ' presenteado' : ''}" style="animation: slideUp .5s ${i * 0.04}s ease both;">
-            ${p.pagou ? '<span class="gift-badge-dado">💚 Já presenteado</span>' : ''}
+        <div class="gift-card" style="animation: slideUp .5s ${i * 0.04}s ease both;">
             <div class="gift-emoji">${p.emoji || '🎁'}</div>
             <span class="gift-tag ${p.categoria}">${tagLabel(p.categoria)}</span>
             <div class="gift-title">${escaparHtml(p.nome)}</div>
@@ -108,7 +109,7 @@ function renderizarPresentes(categoria = 'todos') {
             <div class="gift-price">${WeddingHelpers.formatarBRL(p.preco)}</div>
             <div class="gift-divider"></div>
             <button class="present-btn" data-chave="${p.chave}">
-                ${p.pagou ? 'Presentear também' : 'Quero presentear'}
+                Quero presentear
             </button>
         </div>
     `).join('');
@@ -144,6 +145,16 @@ const irPagamentoBtn = document.getElementById('irPagamentoBtn');
 const rsvpPromptModal = document.getElementById('rsvpPromptModal');
 
 let presenteEmPagamento = null;
+// Preenchido só quando o presente escolhido é um dos três que dão algo em troca.
+let perkEmPagamento = null;
+
+const perkForm = document.getElementById('perkForm');
+const perkAviso = document.getElementById('perkAviso');
+const perkNome = document.getElementById('perkNome');
+const perkTelefone = document.getElementById('perkTelefone');
+const perkMusicaWrap = document.getElementById('perkMusicaWrap');
+const perkMusica = document.getElementById('perkMusica');
+const perkErro = document.getElementById('perkErro');
 
 function mostrarPasso(n) {
     passo1.style.display = n === 1 ? 'block' : 'none';
@@ -154,10 +165,24 @@ function mostrarPasso(n) {
 // o valor livre não tem id e por isso não marca nada como pago.
 function abrirModalPagamento(presente) {
     presenteEmPagamento = presente;
+    perkEmPagamento = WeddingHelpers.perkDoPresente(presente.nome);
+
     modalTitle.textContent = (presente.emoji || '🎁') + ' Presentear';
     modalGiftName.textContent = presente.nome;
     modalValor.textContent = WeddingHelpers.formatarBRL(presente.preco);
     irPagamentoBtn.href = presente.link_pagamento || '#';
+
+    perkForm.style.display = perkEmPagamento ? 'block' : 'none';
+    if (perkEmPagamento) {
+        perkAviso.textContent = perkEmPagamento.aviso;
+        perkMusicaWrap.style.display = perkEmPagamento.pedeMusica ? 'block' : 'none';
+    }
+    // Nome e telefone são da pessoa, não do presente: quem der dois perks não
+    // digita de novo. A música é do presente e o erro é da tentativa anterior,
+    // então esses dois sempre zeram.
+    perkMusica.value = '';
+    perkErro.textContent = '';
+
     mostrarPasso(1);
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -167,6 +192,41 @@ function closeModal() {
     modal.classList.remove('open');
     document.body.style.overflow = '';
     presenteEmPagamento = null;
+    perkEmPagamento = null;
+}
+
+// Devolve o payload pronto para o webhook, ou null quando algum campo não
+// passou — nesse caso a mensagem já está na tela e o modal fica aberto.
+function coletarDadosDoPerk(perk, presente) {
+    const nome = perkNome.value.trim();
+    const telefone = perkTelefone.value.trim();
+    const musica = perkMusica.value.trim();
+
+    if (!nome) {
+        perkErro.textContent = 'Escreve seu nome, por favor.';
+        perkNome.focus();
+        return null;
+    }
+    if (!WeddingHelpers.telefoneValido(telefone)) {
+        perkErro.textContent = 'Confere o WhatsApp: precisa do DDD, tipo (11) 91234-5678.';
+        perkTelefone.focus();
+        return null;
+    }
+    if (perk.pedeMusica && !musica) {
+        perkErro.textContent = 'Conta qual música você quer ouvir.';
+        perkMusica.focus();
+        return null;
+    }
+
+    perkErro.textContent = '';
+    return {
+        tipo: perk.tipo,
+        presente: presente.nome,
+        nome: nome,
+        telefone: WeddingHelpers.digitosTelefone(telefone),
+        musica: perk.pedeMusica ? musica : null,
+        valor: presente.preco
+    };
 }
 
 // O passo 2 só aparece depois deste clique: quem não abriu o link de pagamento
@@ -174,8 +234,15 @@ function closeModal() {
 // sozinho, e agora a única que existe — sem exclusividade, um clique a mais não
 // protegeria ninguém de nada.
 irPagamentoBtn.addEventListener('click', () => {
-    // Sem id não há o que marcar no banco (caso do valor livre): fecha e agradece.
-    if (!presenteEmPagamento || !presenteEmPagamento.id) {
+    // O passo 2 serve a duas coisas: marcar o presente no banco e, nos três
+    // perks, coletar o contato. Um perk precisa do passo 2 mesmo sem `id` —
+    // se o Supabase estiver fora, o pedido de música ainda tem de chegar aos
+    // noivos pelo webhook, que não depende do banco.
+    const precisaPasso2 = presenteEmPagamento &&
+        (presenteEmPagamento.id || perkEmPagamento);
+
+    if (!precisaPasso2) {
+        // Nada a registrar (caso do valor livre): fecha e agradece.
         setTimeout(() => { closeModal(); abrirPromptRsvp(); }, 600);
         return;
     }
@@ -190,24 +257,47 @@ document.getElementById('pagarDepoisBtn').addEventListener('click', () => {
 });
 
 document.getElementById('confirmarPagamentoBtn').addEventListener('click', async (e) => {
-    if (!presenteEmPagamento || !presenteEmPagamento.id) return closeModal();
+    // Copiados para variáveis locais antes de qualquer await: fechar o modal
+    // (clique no fundo, por exemplo) zera as globais no meio da espera.
+    const presente = presenteEmPagamento;
+    const perk = perkEmPagamento;
+    if (!presente || (!presente.id && !perk)) return closeModal();
+
+    // A validação vem antes de desabilitar o botão para o convidado poder
+    // corrigir o campo e clicar de novo.
+    let dadosPerk = null;
+    if (perk) {
+        dadosPerk = coletarDadosDoPerk(perk, presente);
+        if (!dadosPerk) return;
+    }
+
     const botao = e.currentTarget;
     botao.disabled = true;
     botao.textContent = 'Registrando...';
 
-    const ok = await WeddingDB.marcarPresentePago(presenteEmPagamento.id);
+    // O webhook vai primeiro: é o dado que só existe nesta tela. A marcação no
+    // banco os noivos conseguem fazer na mão depois; o pedido de música, não.
+    const perkOk = dadosPerk ? await WeddingWebhook.enviarPerk(dadosPerk) : true;
+    const bancoOk = presente.id ? await WeddingDB.marcarPresentePago(presente.id) : true;
+
     botao.disabled = false;
     botao.textContent = '✅ Já fiz o pagamento';
 
-    if (!ok) {
+    // Falhar o webhook é o único caso que pede algo do convidado, então ganha
+    // da falha de banco na mensagem.
+    if (!perkOk) {
+        showToast('Pagamento anotado! Mas não conseguimos salvar seus dados — manda seu nome e WhatsApp pra Vanessa ou pro Ali, por favor 🙏');
+    } else if (!bancoOk) {
         showToast('Não conseguimos registrar agora. O pagamento está feito — a gente marca na mão, pode deixar!');
-        closeModal();
-        return;
+    } else if (perk) {
+        showToast('Anotado! A gente te chama no WhatsApp pra combinar ❤️');
+    } else {
+        showToast('Presente registrado! Muito obrigado ❤️');
     }
 
-    showToast('Presente registrado! Muito obrigado ❤️');
     closeModal();
-    await recarregarPresentes();
+    // Não recarrega a lista: nada no cartão depende mais de `pagou`, então
+    // reconsultar o banco só reiniciaria as animações de entrada à toa.
     setTimeout(abrirPromptRsvp, 450);
 });
 

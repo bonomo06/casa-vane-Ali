@@ -117,3 +117,59 @@ test('VALORES_COM_LINK tem os 15 valores em ordem crescente', () => {
     const ordenado = [...H.VALORES_COM_LINK].sort((a, b) => a - b);
     assert.deepStrictEqual(H.VALORES_COM_LINK, ordenado);
 });
+
+// ---------- presentes com contrapartida (perks) ----------
+
+test('perkDoPresente reconhece os tres presentes com contrapartida', () => {
+    assert.strictEqual(H.perkDoPresente('Jantar no apê').tipo, 'ape');
+    assert.strictEqual(H.perkDoPresente('Escolher uma música no repertório da banda').tipo, 'musica');
+    assert.strictEqual(H.perkDoPresente('Preferência na fila do bar').tipo, 'bar');
+});
+
+test('perkDoPresente casa mesmo sem acento, com caixa e espaco trocados', () => {
+    // A chave passa por normalizar(), entao o nome vindo do banco pode variar
+    // sem quebrar o reconhecimento.
+    assert.strictEqual(H.perkDoPresente('JANTAR NO APE').tipo, 'ape');
+    assert.strictEqual(H.perkDoPresente('  jantar   no  apê  ').tipo, 'ape');
+});
+
+test('perkDoPresente devolve null para presente comum', () => {
+    assert.strictEqual(H.perkDoPresente('Cota do sofá'), null);
+    assert.strictEqual(H.perkDoPresente(''), null);
+    assert.strictEqual(H.perkDoPresente(null), null);
+    assert.strictEqual(H.perkDoPresente(undefined), null);
+});
+
+test('so o presente da musica pede o campo de musica', () => {
+    assert.strictEqual(H.perkDoPresente('Escolher uma música no repertório da banda').pedeMusica, true);
+    assert.strictEqual(H.perkDoPresente('Jantar no apê').pedeMusica, false);
+    assert.strictEqual(H.perkDoPresente('Preferência na fila do bar').pedeMusica, false);
+});
+
+test('cada perk tem tipo unico e um aviso para o convidado', () => {
+    const perks = Object.keys(H.PERKS).map(k => H.PERKS[k]);
+    assert.strictEqual(perks.length, 3);
+    assert.deepStrictEqual(perks.map(p => p.tipo).sort(), ['ape', 'bar', 'musica']);
+    perks.forEach(p => assert.ok(p.aviso && p.aviso.length > 10, 'aviso de ' + p.tipo));
+});
+
+test('digitosTelefone deixa so numero', () => {
+    assert.strictEqual(H.digitosTelefone('(11) 91234-5678'), '11912345678');
+    assert.strictEqual(H.digitosTelefone('+55 11 91234 5678'), '5511912345678');
+    assert.strictEqual(H.digitosTelefone(null), '');
+});
+
+test('telefoneValido aceita celular e fixo com DDD', () => {
+    assert.strictEqual(H.telefoneValido('(11) 91234-5678'), true);   // 11 digitos
+    assert.strictEqual(H.telefoneValido('11 3123-4567'), true);      // 10 digitos
+    assert.strictEqual(H.telefoneValido('+55 (11) 91234-5678'), true);
+    assert.strictEqual(H.telefoneValido('5511312345 67'), true);
+});
+
+test('telefoneValido recusa numero curto, longo ou sem DDD', () => {
+    assert.strictEqual(H.telefoneValido('91234-5678'), false);  // 9 digitos, sem DDD
+    assert.strictEqual(H.telefoneValido('123'), false);
+    assert.strictEqual(H.telefoneValido('119123456789'), false); // 12 sem come\u00e7ar com 55
+    assert.strictEqual(H.telefoneValido(''), false);
+    assert.strictEqual(H.telefoneValido(null), false);
+});

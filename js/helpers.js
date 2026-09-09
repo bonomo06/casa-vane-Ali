@@ -92,6 +92,51 @@
         return 'R$ ' + Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
     }
 
+    // Os três presentes que dão algo em troca. Quem escolhe um deles precisa
+    // deixar contato, então o site pede os dados e manda para o n8n.
+    //
+    // A chave é o nome do presente já passado por normalizar() — sem acento e
+    // em minúsculas. É o nome que liga as duas pontas porque a tabela do
+    // Supabase não tem coluna de tipo; um teste em tests/test_gerar_seed.py
+    // falha se algum desses nomes deixar de existir em scripts/gerar_seed.py.
+    var PERKS = {
+        'jantar no ape': {
+            tipo: 'ape',
+            pedeMusica: false,
+            aviso: 'Esse presente é um jantar com a gente — deixa seu contato que a gente combina a data com você.'
+        },
+        'escolher uma musica no repertorio da banda': {
+            tipo: 'musica',
+            pedeMusica: true,
+            aviso: 'Conta pra gente qual música você quer ouvir na pista, que a gente passa pra banda.'
+        },
+        'preferencia na fila do bar': {
+            tipo: 'bar',
+            pedeMusica: false,
+            aviso: 'Deixa seu contato que a gente te avisa como funciona a preferência no bar na festa.'
+        }
+    };
+
+    function perkDoPresente(nome) {
+        return PERKS[normalizar(nome)] || null;
+    }
+
+    function digitosTelefone(texto) {
+        return String(texto === null || texto === undefined ? '' : texto).replace(/\D/g, '');
+    }
+
+    // Aceita fixo (10) e celular (11), com ou sem o 55 do país na frente.
+    // Deliberadamente frouxo: barrar um número válido custa um presente, e
+    // errar o telefone só custa uma mensagem no WhatsApp.
+    function telefoneValido(texto) {
+        var d = digitosTelefone(texto);
+        if (d.length === 12 || d.length === 13) {
+            if (d.slice(0, 2) !== '55') return false;
+            d = d.slice(2);
+        }
+        return d.length === 10 || d.length === 11;
+    }
+
     return {
         LINKS_POR_VALOR: LINKS_POR_VALOR,
         VALORES_COM_LINK: VALORES_COM_LINK,
@@ -100,6 +145,10 @@
         normalizar: normalizar,
         buscarConvidados: buscarConvidados,
         validarUrlAppsScript: validarUrlAppsScript,
-        formatarBRL: formatarBRL
+        formatarBRL: formatarBRL,
+        PERKS: PERKS,
+        perkDoPresente: perkDoPresente,
+        digitosTelefone: digitosTelefone,
+        telefoneValido: telefoneValido
     };
 });
